@@ -34,7 +34,8 @@ char buffer[5000] ; //big enough for 500 numbers
    char *record;
    char *line;
    int i=0,j=0;
-   double mat[4400][500];
+
+   static double mat[4400][500];
    FILE *fstream = fopen("data.txt","r");
    if(fstream == NULL)
    {
@@ -48,7 +49,7 @@ char buffer[5000] ; //big enough for 500 numbers
      while(record != NULL)
      {
      
-     printf("recodrd: %s\n",record) ; 
+     //printf("recodrd: %s\n",record) ; 
      mat[i][j++] = atof(record) ;
      record = strtok(NULL,",");
      
@@ -57,12 +58,12 @@ char buffer[5000] ; //big enough for 500 numbers
      
    }
 
-   /*for(int x = 0 ; i < 100; x++){
+  /* for(int x = 0 ; i < 100; x++){
    		for(int y = 0 ; j < 100; y++){
 
-   			printf("%f\n", mat[x][y]);
+   			printf("%f ", mat[x][y]);
    		}
-
+   		printf("\n");
    }*/
 
 }
