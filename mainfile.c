@@ -45,6 +45,7 @@ char buffer[5000] ; //big enough for 500 numbers
 
    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
    {
+      j =0;
     	record = strtok(line,",");
      while(record != NULL)
      {
@@ -58,13 +59,13 @@ char buffer[5000] ; //big enough for 500 numbers
      
    }
 
-  /* for(int x = 0 ; i < 100; x++){
-   		for(int y = 0 ; j < 100; y++){
+   for(int x = 0 ; x < 4400; x++){
+   		for(int y = 0 ; y < 500; y++){
 
    			printf("%f ", mat[x][y]);
    		}
    		printf("\n");
-   }*/
+   }
 
 }
 
