@@ -2,6 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define ROWS 4400
+#define COLS 500
+
+int lowToHigh(const void *a, const void *b){
+  return (*(double*)a-*(double*) b);
+}
+
 int main(){
 
 //Reading in the files
@@ -9,7 +16,7 @@ FILE *fp = fopen("keys.txt", "r");
 
 
 
-long long keys[4400];
+long long keys[ROWS];
 
 if(fp == NULL){
 	printf("File opening failed\n");
@@ -35,7 +42,7 @@ char buffer[5000] ; //big enough for 500 numbers
    char *line;
    int i=0,j=0;
 
-   static double mat[4400][500];
+   static double mat[ROWS][COLS];
    FILE *fstream = fopen("data.txt","r");
    if(fstream == NULL)
    {
@@ -59,13 +66,25 @@ char buffer[5000] ; //big enough for 500 numbers
      
    }
 
-   for(int x = 0 ; x < 4400; x++){
-   		for(int y = 0 ; y < 500; y++){
+   
 
-   			printf("%f ", mat[x][y]);
-   		}
-   		printf("\n");
-   }
+   //sorting the column by column
+   
+   static double justAColumn[ROWS];
+   for(int x = 0 ; x < ROWS; x++){
+
+    
+        justAColumn[x] = mat[x][0];
+     
+ }
+
+
+ qsort(justAColumn, ROWS, sizeof(double), lowToHigh);
+
+ for (int x = 0; x < ROWS; ++x)
+ {
+   printf("%f\n", justAColumn[x]);
+ }
 
 }
 
