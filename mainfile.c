@@ -1,31 +1,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "type.h"
 
 #define ROWS 4400
 #define COLS 500
 
 
-typedef struct Element
-{
-  /* struct for each element in the matrix */
-  int row;
-  int col;
-  double datum;
 
-} element;
 
  int lowToHigh(const void *a, const void *b){
-  if (*(double*)a > *(double*)b)
+  if ( (*((struct Element*)a)).datum > (*((struct Element*)b)).datum)
     return 1;
-  else if (*(double*)a < *(double*)b)
+  else if ((*((struct Element*)a)).datum  < (*((struct Element*)b)).datum )
     return -1;
   else
     return 0;  
 
 }
 
-int main(void){
+int main(){
 
 //Reading in the files
 FILE *fp = fopen("keys.txt", "r");
@@ -88,21 +82,25 @@ char buffer[5000] ; //big enough for 500 numbers
    
 
    //sorting the column by column
-   
-   static double justAColumn[ROWS];
+   static struct Element justAColumn[ROWS];
    for(int x = 0 ; x < ROWS; x++){
 
-    
-        justAColumn[x] = mat[x][0];
+        struct Element el;
+        el.row = x;
+        el.col = 0;
+        el.datum =  mat[x][0];
+
+
+        justAColumn[x] = el;
      
     }
 
 
- qsort(justAColumn, ROWS, sizeof(double), lowToHigh);
+ qsort(justAColumn, ROWS, sizeof(struct Element), lowToHigh);
  printf("%s\n", "After sorting");
  for (int x = 0; x < ROWS; ++x)
  {
-   printf("%f\n", justAColumn[x]);
+   printf("%f\n", justAColumn[x].datum);
  }
 
 }
