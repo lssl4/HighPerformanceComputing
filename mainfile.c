@@ -10,9 +10,9 @@
 
 
  int lowToHigh(const void *a, const void *b){
-  if ( (*((struct Element*)a)).datum > (*((struct Element*)b)).datum)
+  if ( (*((Element*)a)).datum > (*((Element*)b)).datum)
     return 1;
-  else if ((*((struct Element*)a)).datum  < (*((struct Element*)b)).datum )
+  else if ((*((Element*)a)).datum  < (*((Element*)b)).datum )
     return -1;
   else
     return 0;  
@@ -82,10 +82,10 @@ char buffer[5000] ; //big enough for 500 numbers
    
 
    //sorting the column by column
-   static struct Element justAColumn[ROWS];
+   static Element justAColumn[ROWS];
    for(int x = 0 ; x < ROWS; x++){
 
-        struct Element el;
+        Element el;
         el.row = x;
         el.col = 0;
         el.datum =  mat[x][0];
@@ -96,7 +96,7 @@ char buffer[5000] ; //big enough for 500 numbers
     }
 
 
- qsort(justAColumn, ROWS, sizeof(struct Element), lowToHigh);
+ qsort(justAColumn, ROWS, sizeof(Element), lowToHigh);
  printf("%s\n", "After sorting");
  for (int x = 0; x < ROWS; ++x)
  {
