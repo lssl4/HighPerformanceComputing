@@ -5,11 +5,25 @@
 #define ROWS 4400
 #define COLS 500
 
-int lowToHigh(const void *a, const void *b){
-  return (*(double*)a-*(double*) b);
+typedef struct Element
+{
+  /* struct for each element in the matrix */
+  int row;
+  int col;
+  double datum;
+
+} element;
+
+ int lowToHigh(const void *a, const void *b){
+  if (*(double*)a > *(double*)b)
+    return 1;
+  else if (*(double*)a < *(double*)b)
+    return -1;
+  else
+    return 0;  
 }
 
-int main(){
+int main(void){
 
 //Reading in the files
 FILE *fp = fopen("keys.txt", "r");
@@ -52,6 +66,7 @@ char buffer[5000] ; //big enough for 500 numbers
 
    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
    {
+      //always restart j whenever you get a new row
       j =0;
     	record = strtok(line,",");
      while(record != NULL)
@@ -62,6 +77,8 @@ char buffer[5000] ; //big enough for 500 numbers
      record = strtok(NULL,",");
      
      }
+
+     //increasing row number
      ++i ;
      
    }
@@ -76,11 +93,11 @@ char buffer[5000] ; //big enough for 500 numbers
     
         justAColumn[x] = mat[x][0];
      
- }
+    }
 
 
  qsort(justAColumn, ROWS, sizeof(double), lowToHigh);
-
+ printf("%s\n", "After sorting");
  for (int x = 0; x < ROWS; ++x)
  {
    printf("%f\n", justAColumn[x]);
