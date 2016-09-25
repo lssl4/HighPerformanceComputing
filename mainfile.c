@@ -5,6 +5,7 @@
 #define ROWS 4400
 #define COLS 500
 
+
 typedef struct Element
 {
   /* struct for each element in the matrix */
@@ -21,6 +22,7 @@ typedef struct Element
     return -1;
   else
     return 0;  
+
 }
 
 int main(void){
