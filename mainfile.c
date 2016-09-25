@@ -5,8 +5,12 @@
 #define ROWS 4400
 #define COLS 500
 
-int lowToHigh(const void *a, const void *b){
-  return (*(double*)a-*(double*) b);
+static int lowToHigh(const void *a, const void *b){
+  double xx = *(double*)a, yy=*(double*)b;
+  if (xx < yy) return -1;
+  if (xx > yy) return 1;
+  return 0;
+  
 }
 
 int main(){
@@ -79,7 +83,7 @@ char buffer[5000] ; //big enough for 500 numbers
  }
 
 
- qsort(justAColumn, ROWS, sizeof(double), lowToHigh);
+ qsort(justAColumn, ROWS, sizeof(justAColumn[0]), lowToHigh);
 
  for (int x = 0; x < ROWS; ++x)
  {
