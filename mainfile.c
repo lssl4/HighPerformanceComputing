@@ -83,7 +83,7 @@ char buffer[5000] ; //big enough for 500 numbers
  }
 
 
- qsort(justAColumn, ROWS, sizeof(justAColumn[0]), lowToHigh);
+ qsort(justAColumn, ROWS, sizeof(double), lowToHigh);
 
  for (int x = 0; x < ROWS; ++x)
  {
