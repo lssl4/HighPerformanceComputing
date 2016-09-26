@@ -1,3 +1,10 @@
+/*
+Each row directly correspond with a key in the key array. 
+That is row 1 would correspond to key 1 in the key array
+*/
+
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -5,6 +12,7 @@
 
 #define ROWS 4400
 #define COLS 500
+#define DIA 0.000001
 
 
 
@@ -102,6 +110,15 @@ char buffer[5000] ; //big enough for 500 numbers
  {
    printf("%f\n", justAColumn[x].datum);
  }
+
+
+ //generating blocks
+static Element justAColumn[] 
+
+
+
+
+
 
 }
 

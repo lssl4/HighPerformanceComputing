@@ -1,3 +1,6 @@
+
+
+
 typedef struct Elements
 {
   /* struct for each element in the matrix */
@@ -6,3 +9,19 @@ typedef struct Elements
   double datum;
 
 }Element;
+
+typedef struct LinkedList
+{
+	/* data */
+	Element el;
+	struct LinkedList *next;
+}List;
+
+
+/*typedef struct Blocks
+{
+	
+	int rowIds[4];
+	long long
+}Block;
+*/
