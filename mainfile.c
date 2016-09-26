@@ -8,19 +8,22 @@ That is row 1 would correspond to key 1 in the key array
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include "type.h"
+
 
 #define ROWS 4400
 #define COLS 500
 #define DIA 0.000001
+#define BLOCKLISTSIZE 400000000000
 
 
 
 
  int lowToHigh(const void *a, const void *b){
-  if ( (*((Element*)a)).datum > (*((Element*)b)).datum)
+  if ( (*((ELEMENT*)a)).datum > (*((ELEMENT*)b)).datum)
     return 1;
-  else if ((*((Element*)a)).datum  < (*((Element*)b)).datum )
+  else if ((*((ELEMENT*)a)).datum  < (*((ELEMENT*)b)).datum )
     return -1;
   else
     return 0;  
@@ -89,37 +92,38 @@ char buffer[5000] ; //big enough for 500 numbers
 
    
 
-   //sorting the column by column
-   static Element justAColumn[ROWS];
-   for(int x = 0 ; x < ROWS; x++){
+   //sorting and generating the column by column
+   //for(int k = 0; k < COLS; k++ ){
+     static ELEMENT justAColumn[ROWS];
+     for(int x = 0 ; x < ROWS; x++){
 
-        Element el;
-        el.row = x;
-        el.col = 0;
-        el.datum =  mat[x][0];
-
-
-        justAColumn[x] = el;
-     
-    }
+          ELEMENT el;
+          el.row = x;
+          el.col = 0;
+          el.datum =  mat[x][0];
 
 
- qsort(justAColumn, ROWS, sizeof(Element), lowToHigh);
- printf("%s\n", "After sorting");
- for (int x = 0; x < ROWS; ++x)
- {
-   printf("%f\n", justAColumn[x].datum);
- }
+          justAColumn[x] = el;
+       
+      }
 
 
- //generating blocks
-static Element justAColumn[] 
+   qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
+   printf("%s\n", "After sorting");
+   for (int x = 0; x < ROWS; ++x)
+   {
+     printf("%f\n", justAColumn[x].datum);
+   }
 
 
-
+   //generating blocks
+  static BLOCKLIST blocks[BLOCKLISTSIZE];
 
 
 
+
+
+//}
 }
 
 

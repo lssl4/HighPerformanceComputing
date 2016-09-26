@@ -1,27 +1,33 @@
 
 
 
-typedef struct Elements
+typedef struct ELEMENTS
 {
   /* struct for each element in the matrix */
   int row;
   int col;
   double datum;
 
-}Element;
-
-typedef struct LinkedList
-{
-	/* data */
-	Element el;
-	struct LinkedList *next;
-}List;
+}ELEMENT;
 
 
-/*typedef struct Blocks
+typedef struct BLOCKS
 {
 	
 	int rowIds[4];
-	long long
-}Block;
-*/
+	int col;
+	long long signature;
+
+}BLOCK;
+
+
+typedef struct BLOCKLISTS
+{
+	/* data */
+	BLOCK block;
+	struct Lists *next;
+}BLOCKLIST;
+
+
+
+
