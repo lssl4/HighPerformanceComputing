@@ -12,7 +12,8 @@ Printing out keys.txt
 #define ROWS 4400
 #define COLS 500
 
-
+#include <iostream>
+using namespace std;
 
 
  int lowToHigh(const void *a, const void *b){

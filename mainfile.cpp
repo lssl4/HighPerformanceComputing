@@ -9,15 +9,18 @@ That is row 1 would correspond to key 1 in the key array
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <iostream>
-using namespace std;
 #include "type.h"
+#include <unordered_map>
 
 
 #define ROWS 4400
 #define COLS 500
 #define DIA 0.000001
 #define BLOCKLISTSIZE 400000000000
+
+
+#include <iostream>
+using namespace std;
 
 
 
@@ -119,9 +122,8 @@ char buffer[5000] ; //big enough for 500 numbers
 
 
    //generating blocks using an array of blocks with the hashed signature index
-  static BLOCKLIST blocks[BLOCKLISTSIZE];
-
-
+  unordered_map<long long int, BLOCKLIST> collisionTable;
+  
 
 
 //}

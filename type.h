@@ -16,7 +16,7 @@ typedef struct BLOCKS
 	
 	int rowIds[4];
 	int col;
-	long long signature;
+	long long int signature;
 
 }BLOCK;
 
