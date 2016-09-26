@@ -4,13 +4,17 @@ That is row 1 would correspond to key 1 in the key array
 */
 
 
-
+//c directives
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 #include "type.h"
+
+//c++ directives
 #include <unordered_map>
+#include <unordered_set>
 
 
 #define ROWS 4400
@@ -19,10 +23,11 @@ That is row 1 would correspond to key 1 in the key array
 #define BLOCKLISTSIZE 400000000000
 
 
-#include <iostream>
+
+
 using namespace std;
 
-
+unordered_map<long long int, BLOCKLIST> collisionTable;
 
 
  int lowToHigh(const void *a, const void *b){
@@ -34,6 +39,12 @@ using namespace std;
     return 0;  
 
 }
+
+int findCombinations(unordered_set<ELEMENT, ElementKeyHasher> set){
+
+
+}
+
 
 int main(){
 
@@ -122,8 +133,7 @@ char buffer[5000] ; //big enough for 500 numbers
 
 
    //generating blocks using an array of blocks with the hashed signature index
-  unordered_map<long long int, BLOCKLIST> collisionTable;
-  
+
 
 
 //}
