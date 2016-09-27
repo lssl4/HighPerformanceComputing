@@ -10,19 +10,20 @@ That is row 1 would correspond to key 1 in the key array
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
-#include "type.h"
+
+
 
 //c++ directives
 #include <unordered_map>
-#include <unordered_set>
+#include <vector>
+//#include <unordered_set>
+#include "type.h"
 
 
 #define ROWS 4400
 #define COLS 500
 #define DIA 0.000001
-#define BLOCKLISTSIZE 400000000000
-
-
+//#define BLOCKLISTSIZE 400000000000
 
 
 using namespace std;
@@ -40,7 +41,20 @@ unordered_map<long long int, BLOCKLIST> collisionTable;
 
 }
 
-int findCombinations(unordered_set<ELEMENT, ElementKeyHasher> set){
+
+
+/*
+Finds all combinations of set and put it in the collision table. Returns the number of blocks generated
+*/
+int findCombinations(vector<ELEMENT> main, int r){
+
+  //  int n = set
+
+
+}
+
+
+int recurCombinations(){
 
 
 }
