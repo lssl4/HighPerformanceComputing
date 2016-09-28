@@ -49,15 +49,13 @@ Finds all combinations of set and put it in the collision table. Returns the num
 int findCombinations(vector<ELEMENT> main, int r){
 
   //  int n = set
+  for(int i = 0 ; i < main.size)
 
 
 }
 
 
-int recurCombinations(){
 
-
-}
 
 
 int main(){
