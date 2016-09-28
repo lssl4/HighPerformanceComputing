@@ -28,7 +28,8 @@ That is row 1 would correspond to key 1 in the key array
 
 using namespace std;
 
-unordered_map<long long int, BLOCKLIST> collisionTable;
+unordered_map<long long int, vector<BLOCK>> collisionTable;
+long long keys[ROWS];
 
 
  int lowToHigh(const void *a, const void *b){
@@ -44,15 +45,50 @@ unordered_map<long long int, BLOCKLIST> collisionTable;
 
 
 /*
-Finds all combinations of set and put it in the collision table. Returns the number of blocks generated
+Generate combinations of indices. 
 */
-int findCombinations(vector<ELEMENT> main, int r){
+vector<vector<int>> generate_combos(int n, int r) {
+    vector<int> eachCom;
+    vector<vector<int>> listOfCombos;
+   
 
-  //  int n = set
-  for(int i = 0 ; i < main.size)
+
+    //generates the eachCom with numbers up to r
+    for (int i = 0; i < r; i++){
+
+        eachCom.push_back(i);
+       
+    }
 
 
+    while (eachCom[r - 1] < n) {
+
+        //put the just generated combo into the listOfCombos
+        listOfCombos.push_back(eachCom);
+
+
+        int t = r - 1;
+        while (t != 0 && eachCom[t] == n - r + t) t--;
+        eachCom[t]++;
+        for (int i = t + 1; i < r; i++) eachCom[i] = eachCom[i - 1] + 1;
+    }
+
+    //printing out
+    for (int i = 0; i < listOfCombos.size(); ++i)
+        {
+            vector<int> comb = listOfCombos[i];
+            for(int j = 0 ; j < comb.size(); j ++){
+                cout << comb[j]<< " ";
+
+            }
+            cout<< "\n";
+        }
+
+        return listOfCombos;
 }
+
+
+
 
 
 
@@ -65,7 +101,6 @@ FILE *fp = fopen("keys.txt", "r");
 
 
 
-long long keys[ROWS];
 
 if(fp == NULL){
 	printf("File opening failed\n");
@@ -143,6 +178,7 @@ char buffer[5000] ; //big enough for 500 numbers
      printf("%f\n", justAColumn[x].datum);
    }
 
+   generate_combos(5,2);
 
    //generating blocks using an array of blocks with the hashed signature index
 
