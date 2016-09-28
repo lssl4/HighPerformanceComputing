@@ -47,7 +47,7 @@ long long keys[ROWS];
 /*
 Generate combinations of indices. 
 */
-vector<vector<int>> generate_combos(int n, int r) {
+vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
     vector<vector<int>> listOfCombos;
    
@@ -88,8 +88,30 @@ vector<vector<int>> generate_combos(int n, int r) {
 }
 
 
+/*
+Generate blocks given a vector of ELEMENTS and pivot
+*/
+int genBlocks(vector<ELEMENT> v, int pivot){
 
+  //2 combos vectors for block generations and to prevent redundant blocks
+  vector<vector<int>> combos1;
+    vector<vector<int>> combos2;
+    int r =4;
 
+    //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
+    if(pivot==v.size()){
+
+      combos1 = genCombos(combos1.size(), r);
+        for(int i = 0; i < combos1.size(), i++)}{
+          collisionTable[v[combos[i][]]]
+        }
+
+    }else{
+
+      for(int)
+    }
+
+}
 
 
 
@@ -178,7 +200,7 @@ char buffer[5000] ; //big enough for 500 numbers
      printf("%f\n", justAColumn[x].datum);
    }
 
-   generate_combos(5,2);
+   genCombos(5,2);
 
    //generating blocks using an array of blocks with the hashed signature index
 
