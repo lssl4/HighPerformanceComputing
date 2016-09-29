@@ -1,5 +1,7 @@
 
 
+
+
 typedef struct ELEMENTS
 {
   /* struct for each element in the matrix */
@@ -19,7 +21,9 @@ typedef struct ELEMENTS
 typedef struct BLOCKS
 {
 	
-	vector<ELEMENT> elementList(4);
+	//vector<ELEMENT> elementList;
+  vector<int> rowIds;
+  int col;
 	long long int signature;
 
 }BLOCK;
