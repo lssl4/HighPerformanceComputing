@@ -117,8 +117,8 @@ void genBlocks(vector<ELEMENT> v, int pivot){
 
             for(int j = 0 ;j < r; j++){
                 ELEMENT el = v[combos1[i][j]];
-                newBlock.elementList.push_back(el);
-        
+                newBlock.rowIds.push_back(el.row);
+                newBlock.col = el.col;
                 keysSum += keys[el.row];
 
             }
@@ -265,7 +265,7 @@ int main(){
         for(int k =0; k < (*it).second.size(); k++){
 
           for(int l = 0 ; l < 4 ; l ++)
-            cout<< " Value (row): "<< (*it).second[k].elementList[l].row << " ";
+            cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
 
         }
 
