@@ -19,8 +19,7 @@ typedef struct ELEMENTS
 typedef struct BLOCKS
 {
 	
-	int rowIds[4];
-	int col;
+	vector<ELEMENT> elementList(4);
 	long long int signature;
 
 }BLOCK;

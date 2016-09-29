@@ -101,14 +101,36 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
     if(pivot==v.size()){
 
-      combos1 = genCombos(combos1.size(), r);
-        for(int i = 0; i < combos1.size(), i++)}{
-          collisionTable[v[combos[i][]]]
+      combos1 = genCombos(v.size(), r);
+
+      //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+        for(int i = 0; i < combos1.size(), i++){
+
+
+
+          //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
+          //and to get the key value from keys array from the row
+          long long keysSum =0;
+          Block newBlock;
+
+          for(int j = 0 ;j < r; j++){
+              Element el = v[combos1[i][j]];
+              newBlock.elementList.push_back(el);
+             keysSum += keys[el.row]; 
+
+          }
+
+          //Assign keysSum to signature of block
+          newBlock.signature = keysSum;
+
+          //add to collision table, if it doesn't exist, it makes a new entry
+          collisionTable[keysSum].push_back(newBlock);
         }
 
+    //else if there's a pivot
     }else{
 
-      for(int)
+      
     }
 
 }
