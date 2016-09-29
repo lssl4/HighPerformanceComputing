@@ -117,8 +117,8 @@ void genBlocks(vector<ELEMENT> v, int pivot){
 
             for(int j = 0 ;j < r; j++){
                 ELEMENT el = v[combos1[i][j]];
-                newBlock.rowIds.push_back(el.row);
-                newBlock.col = el.col;
+                newBlock.elementList.push_back(el);
+        
                 keysSum += keys[el.row];
 
             }
@@ -235,11 +235,7 @@ int main(){
 
 
     qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
-    printf("%s\n", "keys");
-    for (int x = 0; x < ROWS; ++x)
-    {
-        printf("%lli\n", keys[x]);
-    }
+    
 
 
 
@@ -269,7 +265,7 @@ int main(){
         for(int k =0; k < (*it).second.size(); k++){
 
           for(int l = 0 ; l < 4 ; l ++)
-            cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
+            cout<< " Value (row): "<< (*it).second[k].elementList[l].row << " ";
 
         }
 
