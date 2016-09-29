@@ -92,12 +92,13 @@ vector<vector<int>> genCombos(int n, int r) {
 /*
 Generate blocks given a vector of ELEMENTS and pivot
 */
-void genBlocks(vector<ELEMENT> v, int pivot){
+int genBlocks(vector<ELEMENT> v, int pivot){
 
     //2 combos vectors for block generations and to prevent redundant blocks
     vector<vector<int>> combos1;
     vector<vector<int>> combos2;
     int r =4;
+    int blocksGen = 0;
 
 
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
@@ -132,26 +133,57 @@ void genBlocks(vector<ELEMENT> v, int pivot){
 
         //else if there's a pivot
     }else{
-      /*vector<vector<int>> combinedCombos;
 
-      for(int k = 0 ; k < r; k++){
+     
+      if(pivot <v.size()&& pivot > 0 ){
+        for(int k = 0 ; k < r; k++){
 
-        if(combos1.size)
-        //iteratively decreasing r for the first combos
-       combos1 = genCombos(pivot, r-k-1);
+         vector<vector<int>> combinedCombos;
+          //iteratively decreasing r for the first combos
+         combos1 = genCombos(pivot, r-k-1);
+         cout <<"aFter combos1"<<endl;
+         //iteratively increasing r for the second combos
+         combos2 = genCombos((int)(v.size()-pivot), k+1);
 
-       //iteratively increasing r for the second combos
-       combos2 = genCombos((int)(v.size()-pivot), k);
+         //after producing 2 sets of combos, combined them in a permutative manner 
+         for(int l = 0 ; l < combos1.size() ; l++){
+            vector<int> combA = combos1[l];
 
 
+            for(int m = 0 ; m  < combos2.size(); m++){
+                vector<int> aCombinedCombo;//(combos1[l]);
+                
+                vector<int> combB = combos2[m];
 
-     }*/
 
-      
+                //inserting combos1 first
+                aCombinedCombo.insert(aCombinedCombo.end(),combA.begin(), combA.end());
+                
+                //inserting combos2 second
+                aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
+
+               combinedCombos.push_back( aCombinedCombo );
+
+                
+
+            }
+
+         }
+         for(int n = 0 ; n < combinedCombos.size(); n ++){
+                    vector<int> ve = combinedCombos[n];
+                    for(int o = 0 ; o < ve.size(); o++){
+                      cout << ve[o] << " " ;
+                  }
+                  cout << "End Line"<< endl;
+                }
+
+          }
+
+      }
 
 
     }
-
+    return blocksGen;
 }
 
 
@@ -240,8 +272,9 @@ int main(){
 
 
     //generating blocks using an array of blocks with the hashed signature index
-    ELEMENT elarray[5];
-    for(int k = 0; k < 5; k++){
+    int n = 6;
+    ELEMENT elarray[n];
+    for(int k = 0; k < n; k++){
         elarray[k].row = k;
         elarray[k].col = 1;
         elarray[k].datum = 1;
@@ -249,13 +282,13 @@ int main(){
 
 
     vector<ELEMENT> v;
-    for(int k = 0; k < 5; k++){
+    for(int k = 0; k < n; k++){
         v.push_back(elarray[k]);
     }
 
 
 
-    genBlocks(v,v.size());
+    genBlocks(v,4);
 
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
