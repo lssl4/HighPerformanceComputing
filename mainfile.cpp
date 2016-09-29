@@ -60,23 +60,25 @@ vector<vector<int>> genCombos(int n, int r) {
 
     }
 
+    if(r-1 >= 0){
+        while (eachCom[r - 1] < n) {
 
-    while (eachCom[r - 1] < n) {
-
-        //put the just generated combo into the listOfCombos
-        listOfCombos.push_back(eachCom);
+            //put the just generated combo into the listOfCombos
+            listOfCombos.push_back(eachCom);
 
 
-        int t = r - 1;
-        while (t != 0 && eachCom[t] == n - r + t) t--;
-        eachCom[t]++;
-        for (int i = t + 1; i < r; i++) eachCom[i] = eachCom[i - 1] + 1;
+            int t = r - 1;
+            while (t != 0 && eachCom[t] == n - r + t) t--;
+            eachCom[t]++;
+            for (int i = t + 1; i < r; i++) eachCom[i] = eachCom[i - 1] + 1;
+        }
     }
 
     //printing out
   
     for (int i = 0; i < listOfCombos.size(); ++i)
-    {
+    {   
+        cout<<"each combo" << endl;
         vector<int> comb = listOfCombos[i];
         for(int j = 0 ; j < comb.size(); j ++){
             cout << comb[j]<< " ";
@@ -137,11 +139,21 @@ int genBlocks(vector<ELEMENT> v, int pivot){
      
       if(pivot <v.size()&& pivot > 0 ){
         for(int k = 0 ; k < r; k++){
-
+            int n1 = pivot; 
+            int r1 = r-k-1;
+            int n2 = (int)(v.size()-pivot);
+            int r2 = k+1;
+            if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
          vector<vector<int>> combinedCombos;
+
+         //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
+
           //iteratively decreasing r for the first combos
          combos1 = genCombos(pivot, r-k-1);
-         cout <<"aFter combos1"<<endl;
+        cout <<"aFter combos1"<<endl;
+
+       // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
+
          //iteratively increasing r for the second combos
          combos2 = genCombos((int)(v.size()-pivot), k+1);
 
@@ -169,6 +181,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
             }
 
          }
+
          for(int n = 0 ; n < combinedCombos.size(); n ++){
                     vector<int> ve = combinedCombos[n];
                     for(int o = 0 ; o < ve.size(); o++){
@@ -177,7 +190,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                   cout << "End Line"<< endl;
                 }
 
-          }
+         } }
 
       }
 

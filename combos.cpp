@@ -1,9 +1,11 @@
 #include <iostream>
 #include <vector>
+
+using namespace std;
 #include "type.h"
 
 
-using namespace std;
+
 
 void generate_combos(int n, int r) {
     vector<int> eachCom;
@@ -17,8 +19,8 @@ void generate_combos(int n, int r) {
         //eachCom[i] = i;
     }
 
-
-    while (eachCom[r - 1] < n) {
+    if(r-1>=0){
+    while( eachCom[r - 1] < n) {
 
         //put the just generated combo into the listOfCombos
         listOfCombos.push_back(eachCom);
@@ -29,7 +31,7 @@ void generate_combos(int n, int r) {
         eachCom[t]++;
         for (int i = t + 1; i < r; i++) eachCom[i] = eachCom[i - 1] + 1;
     }
-
+    }
     //printing out
     for (int i = 0; i < listOfCombos.size(); ++i)
         {
