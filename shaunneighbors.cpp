@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <cmath>
-#define dia 0.000002
+#define dia 0.000001
 
 using namespace std;
 #include <unordered_set>
@@ -22,71 +23,52 @@ int pivot;
 vector<vector<double>> getNeighbours(double *s){
     
     vector<vector<double>> listOfNeigh;
-    vector<double>::iterator it;
-<<<<<<< HEAD
-    // it = v1.begin();
-
-    //int start = 0;
     
-    int pivot=-1;
-   
+
+    //for each element in the array, find its neighborhood, including the last element even though there's no more trailing elements after it. 
     for (int start = 0; start < (sizeof(element)/sizeof(element[0])); start++)
 
     {
         vector<double> v1;
         v1.push_back(element[start]);
         //element j= the element being checked to see if it is within dia distance.
-<<<<<<< HEAD
-        // v1.push_back(element[i]);
-        for(int j = 1;j<(sizeof(element)/sizeof(element[0])); j++ ){
+
+
+        //for each trailing element after start, check if it's within neighborhood
+        for(int j = 1;j<(sizeof(element)/sizeof(element[0])) -start; j++ ){
             //for(start;start<(sizeof(element)/sizeof(element[0]));start++){
           
-            cout<<(1000000.0*element[j])-(1000000.0*element[start])<<endl;
-            if( ( (1000000.0*element[j])-(1000000.0*element[start]) )< (1000000.0*dia)){
 
-                v1.push_back(element[j]);
+            printf("%.12f - %.12f = %.12f | %i\n",(1000000.0*element[j+start]), (1000000.0*element[start]), (1000000.0*element[j+start])-(1000000.0*element[start])  , (1000000.0*element[j+start]) - (1000000.0*element[start]) < (1000000.0*dia) );
+
+            if( ( (1000000.0*element[j+start])-(1000000.0*element[start]) )< (1000000.0*dia) ){
+
+                v1.push_back(element[j+start]);
                 //pivot=j;
                 
             }
 
             //if element j is not within the dia distance
             else{
-                
-               listOfNeigh.push_back(v1);
-
-              
-                
+            
 
                 break;
             }
         }
 
+        //after finding the longest neighborhood, push it in the list 
+        listOfNeigh.push_back(v1);
 
-
-        //x++;
-        //start=x;
-        //j=x;
-        //cout<<  <<endl;
+     
     }
 
     
 
      return listOfNeigh;
+ 
+ }
 
-
-        //for debugging
-        for( it = v1.begin();it!=v1.end();it++)
-        {
-            cout<< *it <<endl;
-        }
-        cout<< pivot <<endl;
-
-
-        v1.erase(v1.begin());//remove front element
-        pivot = 0;//reset pivot index point
-        }
-
-    }
+    
 
 
 
@@ -112,6 +94,5 @@ int main(){
 
         cout<< endl;
     }
-
 }
 
