@@ -319,8 +319,10 @@ int main(){
         
         printf("%i %f\n", k, justAColumn[k] );
     }
+    //after sorting, generate neighborhoods
 
-    //generating blocks using an array of blocks with the hashed signature index
+
+    //demo of genBlocks
     int n = 6;
     ELEMENT elarray[n];
     for(int k = 0; k < n; k++){
@@ -336,9 +338,11 @@ int main(){
     }
 
 
-
+    //generate blocks
     genBlocks(v,4);
 
+
+    //printing out collision table
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
         cout  <<"Key: "<< (*it).first ;

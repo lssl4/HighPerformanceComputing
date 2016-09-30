@@ -13,81 +13,61 @@ using namespace std;
 #include <algorithm>
 #include "type.h"
 
-double element[7]={0.000452,0.000453,0.000454,0.000455,0.000456,0.000458,0.000459};
+double element[10]={0.0004525,0.000453,0.0004535,0.000454,0.0004545,0.000455,0.0004555,0.000456,0.0004565,0.000457};
 int pivot;
 
 
 
-void getNeighbour(double *s){
-    vector<double> v1;
-    vector<double> v2;
+vector<vector<double>> getNeighbours(double *s){
+    
+    vector<vector<double>> listOfNeigh;
     vector<double>::iterator it;
     // it = v1.begin();
 
     //int start = 0;
-    int j=1;
+    
     int pivot=-1;
-    //int x = 0;
-    //while(x<(sizeof(element)/sizeof(element[0]))-1)// this while loop controls the location of x(ie the start values)
-    //j=x;
-    for (int start = 0; start < (sizeof(element)/sizeof(element[0]))-1; start++)
+   
+    for (int start = 0; start < (sizeof(element)/sizeof(element[0])); start++)
     {
+        vector<double> v1;
+        v1.push_back(element[start]);
         //element j= the element being checked to see if it is within dia distance.
         // v1.push_back(element[i]);
-        while(j<(sizeof(element)/sizeof(element[0]))){
+        for(int j = 1;j<(sizeof(element)/sizeof(element[0])); j++ ){
             //for(start;start<(sizeof(element)/sizeof(element[0]));start++){
-            if((1000000.0*element[j])-(1000000.0*element[start]) <= (1000000.0*dia)){
+          
+            cout<<(1000000.0*element[j])-(1000000.0*element[start])<<endl;
+            if( ( (1000000.0*element[j])-(1000000.0*element[start]) )< (1000000.0*dia)){
 
                 v1.push_back(element[j]);
-                pivot=j;
-                j++;
+                //pivot=j;
+                
             }
-            else{
-                j=start;
 
-                for( it = v1.begin();it!=v1.end();it++)
-                {
-                    cout<< *it <<endl;
-                }
-                //v1.erase(v1.begin());
-                //cout<< pivot <<endl;
-                //send vector out, 
-                //cout<< j <<endl;
+            //if element j is not within the dia distance
+            else{
+                
+               listOfNeigh.push_back(v1);
+
+              
+                
 
                 break;
-            };
+            }
         }
+
+
 
         //x++;
         //start=x;
         //j=x;
         //cout<<  <<endl;
     }
-    //for(int j=start;j<sizeof(element)/sizeof(element[0]);j++){
-    /*if( (1000000.0*element[j])-(1000000.0*element[start]) <= (1000000.0*dia)){
-        v1.push_back(element[j]);//add element end of vector, that is within dia distance
-        pivot=j;//the last element of the vector
-    }
-    //genBlocks(vector<ELEMENT> v1, int pivot)
-    //find pivot. pivot of first neighbourhood will be last element of first neighbour
-    //
-    //
 
-}
+    
 
-}}
-//}
-
-cout<<"Stored values are:"<<endl;
-for(iterator = set.begin();iterator!=set.end();iterator++)sd
-{
-cout<< *iterator <<endl;
-}*/
-    // cout<< pivot <<endl;/*
-    /*for(it = v1.begin();it!=v1.end();it++)
-   {
-     cout<< *it <<endl;
-   }*/
+     return listOfNeigh;
 
 }
 
@@ -95,7 +75,24 @@ cout<< *iterator <<endl;
 
 int main(){
     //vector<double> v1;
-    getNeighbour(element);
+    vector<vector<double>> output = getNeighbours(element);
+
+        /*for( vector<vector<double>>::iterator it = output.begin();it!=output.end();it++)
+                {
+                    for(vector<double>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++)
+                            {cout<< *it2 << " ";}
+                        cout << endl;
+                }*/
+
+    for(int i = 0; i < output.size(); i++){
+        vector<double> neigh = output[i];
+        for(int j = 0; j < neigh.size(); j ++){
+
+            cout<< neigh[j] << " ";
+        }
+
+        cout<< endl;
+    }
 }
 
 /*
