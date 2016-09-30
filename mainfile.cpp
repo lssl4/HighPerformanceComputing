@@ -158,6 +158,21 @@ int genBlocks(vector<ELEMENT> v, int pivot){
          //iteratively increasing r for the second combos
          combos2 = genCombos((int)(v.size()-pivot), k+1);
 
+        //adding all of the combos by pivot in combos2 to match the latter half of array indices
+         for(int x = 0; x < combos2.size() ; x++){
+            vector<int>eachCom = combos2[x];
+
+            //adding each element in eachCom by pivot
+            for(int y = 0 ; y < eachCom.size(); y++){
+
+                eachCom[y] = eachCom[y] + pivot;
+            }
+            
+            combos2[x] = eachCom;
+
+         }
+
+
          //after producing 2 sets of combos, combined them in a permutative manner 
          for(int l = 0 ; l < combos1.size() ; l++){
             vector<int> combA = combos1[l];
@@ -175,6 +190,8 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                 //inserting combos2 second
                 aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
 
+
+
                 //add the combined combo into combinedCombos
                combinedCombos.push_back( aCombinedCombo );
 
@@ -186,7 +203,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
          //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
           //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-        /*for(int k = 0; k < combinedCombos.size(); k++){
+        for(int k = 0; k < combinedCombos.size(); k++){
 
 
 
@@ -196,7 +213,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
             BLOCK newBlock;
 
             for(int j = 0 ;j < r; j++){
-                ELEMENT el = v[combos1[i][j]];
+                ELEMENT el = v[combinedCombos[k][j]];
                 newBlock.rowIds.push_back(el.row);
                 newBlock.col = el.col;
                 keysSum += keys[el.row];
@@ -208,7 +225,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
             //add to collision table, if it doesn't exist, it makes a new entry
             collisionTable[keysSum].push_back(newBlock);
-        }*/
+        }
 
         //printing out combinedCombos
          /*for(int n = 0 ; n < combinedCombos.size(); n ++){
@@ -333,7 +350,7 @@ int main(){
 
 
 
-    genBlocks(v,v.size());
+    genBlocks(v,4);
 
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
