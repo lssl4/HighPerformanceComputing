@@ -89,6 +89,39 @@ vector<vector<int>> genCombos(int n, int r) {
     return listOfCombos;
 }
 
+/*
+After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable 
+*/
+void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> v){
+    int numOfElements =4;
+
+     //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+        for(int k = 0; k < c.size(); k++){
+
+
+
+            //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
+            //and to get the key value from keys array from the row
+            long long int keysSum =0;
+            BLOCK newBlock;
+
+            for(int j = 0 ;j < numOfElements; j++){
+                ELEMENT el = v[c[k][j]];
+                newBlock.rowIds.push_back(el.row);
+                newBlock.col = el.col;
+                keysSum += keys[el.row];
+
+            }
+
+            //Assign keysSum to signature of block
+            newBlock.signature = keysSum;
+
+            //add to collision table, if it doesn't exist, it makes a new entry
+            collisionTable[keysSum].push_back(newBlock);
+        }
+}
+
+
 
 /*
 Generate blocks given a vector of ELEMENTS and pivot
@@ -107,30 +140,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
         combos1 = genCombos((int)v.size(), r);
 
-        //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-        for(int k = 0; k < combos1.size(); k++){
-
-
-
-            //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
-            //and to get the key value from keys array from the row
-            long long int keysSum =0;
-            BLOCK newBlock;
-
-            for(int j = 0 ;j < r; j++){
-                ELEMENT el = v[combos1[k][j]];
-                newBlock.rowIds.push_back(el.row);
-                newBlock.col = el.col;
-                keysSum += keys[el.row];
-
-            }
-
-            //Assign keysSum to signature of block
-            newBlock.signature = keysSum;
-
-            //add to collision table, if it doesn't exist, it makes a new entry
-            collisionTable[keysSum].push_back(newBlock);
-        }
+       pushToCollisionTable(combos1, v);
 
         //else if there's a pivot
     }else{
@@ -202,30 +212,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
          }
 
          //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
-          //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-        for(int k = 0; k < combinedCombos.size(); k++){
-
-
-
-            //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
-            //and to get the key value from keys array from the row
-            long long int keysSum =0;
-            BLOCK newBlock;
-
-            for(int j = 0 ;j < r; j++){
-                ELEMENT el = v[combinedCombos[k][j]];
-                newBlock.rowIds.push_back(el.row);
-                newBlock.col = el.col;
-                keysSum += keys[el.row];
-
-            }
-
-            //Assign keysSum to signature of block
-            newBlock.signature = keysSum;
-
-            //add to collision table, if it doesn't exist, it makes a new entry
-            collisionTable[keysSum].push_back(newBlock);
-        }
+        pushToCollisionTable(combinedCombos, v);        
 
         //printing out combinedCombos
          /*for(int n = 0 ; n < combinedCombos.size(); n ++){
