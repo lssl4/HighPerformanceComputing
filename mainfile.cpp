@@ -316,8 +316,11 @@ int main(){
 
     qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
     
-
-
+    for (int k = 0; k < 4400; ++k)
+    {
+        /* code */
+        printf("%i %f\n", k, justAColumn[k] );
+    }
 
     //generating blocks using an array of blocks with the hashed signature index
     int n = 6;
