@@ -78,7 +78,6 @@ vector<vector<int>> genCombos(int n, int r) {
   
     for (int i = 0; i < listOfCombos.size(); ++i)
     {   
-        cout<<"each combo" << endl;
         vector<int> comb = listOfCombos[i];
         for(int j = 0 ; j < comb.size(); j ++){
             cout << comb[j]<< " ";
@@ -109,7 +108,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
         combos1 = genCombos((int)v.size(), r);
 
         //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-        for(int i = 0; i < combos1.size(); i++){
+        for(int k = 0; k < combos1.size(); k++){
 
 
 
@@ -119,7 +118,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
             BLOCK newBlock;
 
             for(int j = 0 ;j < r; j++){
-                ELEMENT el = v[combos1[i][j]];
+                ELEMENT el = v[combos1[k][j]];
                 newBlock.rowIds.push_back(el.row);
                 newBlock.col = el.col;
                 keysSum += keys[el.row];
@@ -137,12 +136,14 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     }else{
 
      
-      if(pivot <v.size()&& pivot > 0 ){
+      if(pivot <v.size()&& pivot >= 0 ){
         for(int k = 0 ; k < r; k++){
+
             int n1 = pivot; 
             int r1 = r-k-1;
             int n2 = (int)(v.size()-pivot);
             int r2 = k+1;
+
             if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
          vector<vector<int>> combinedCombos;
 
@@ -174,6 +175,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                 //inserting combos2 second
                 aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
 
+                //add the combined combo into combinedCombos
                combinedCombos.push_back( aCombinedCombo );
 
                 
@@ -182,17 +184,47 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
          }
 
-         for(int n = 0 ; n < combinedCombos.size(); n ++){
+         //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
+          //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+        /*for(int k = 0; k < combinedCombos.size(); k++){
+
+
+
+            //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
+            //and to get the key value from keys array from the row
+            long long int keysSum =0;
+            BLOCK newBlock;
+
+            for(int j = 0 ;j < r; j++){
+                ELEMENT el = v[combos1[i][j]];
+                newBlock.rowIds.push_back(el.row);
+                newBlock.col = el.col;
+                keysSum += keys[el.row];
+
+            }
+
+            //Assign keysSum to signature of block
+            newBlock.signature = keysSum;
+
+            //add to collision table, if it doesn't exist, it makes a new entry
+            collisionTable[keysSum].push_back(newBlock);
+        }*/
+
+        //printing out combinedCombos
+         /*for(int n = 0 ; n < combinedCombos.size(); n ++){
                     vector<int> ve = combinedCombos[n];
                     for(int o = 0 ; o < ve.size(); o++){
                       cout << ve[o] << " " ;
                   }
                   cout << "End Line"<< endl;
-                }
+                }*/
 
-         } }
+         
+         } 
+     }
 
-      }
+      
+    }
 
 
     }
@@ -301,7 +333,7 @@ int main(){
 
 
 
-    genBlocks(v,4);
+    genBlocks(v,v.size());
 
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
