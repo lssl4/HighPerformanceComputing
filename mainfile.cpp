@@ -9,36 +9,35 @@ That is row 1 would correspond to key 1 in the key array
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <iostream>
+
+
 
 using namespace std;
 
 //c++ directives
 #include <unordered_map>
 #include <vector>
+#include <iostream>
+#include <algorithm>
+//#include <unordered_set>
 #include "type.h"
 
 
 #define ROWS 4400
 #define COLS 500
 #define DIA 0.000001
+//#define BLOCKLISTSIZE 400000000000
+
 
 
 
 unordered_map<long long int, vector<BLOCK>> collisionTable;
 long long keys[ROWS];
+static double mat[ROWS][COLS];
 
-
-int lowToHigh(const void *a, const void *b){
-    if ( (*((ELEMENT*)a)).datum > (*((ELEMENT*)b)).datum)
-        return 1;
-    else if ((*((ELEMENT*)a)).datum  < (*((ELEMENT*)b)).datum )
-        return -1;
-    else
-        return 0;
-
+bool lowHigh (ELEMENT i,ELEMENT j) { 
+    return (i.datum<j.datum); 
 }
-
 
 
 /*
@@ -123,13 +122,13 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> v){
 /*
 Generate blocks given a vector of ELEMENTS and pivot
 */
-void genBlocks(vector<ELEMENT> v, int pivot){
+int genBlocks(vector<ELEMENT> v, int pivot){
 
     //2 combos vectors for block generations and to prevent redundant blocks
     vector<vector<int>> combos1;
     vector<vector<int>> combos2;
     int r =4;
-    //int blocksGen = 0;
+    int blocksGen = 0;
 
 
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
@@ -165,9 +164,9 @@ void genBlocks(vector<ELEMENT> v, int pivot){
          //iteratively increasing r for the second combos
          combos2 = genCombos((int)(v.size()-pivot), k+1);
 
-        //adding all of the combos by pivot in combos2 to match the latter half of v indices
+        //adding all of the combos by pivot in combos2 to match the latter half of array indices
          for(int x = 0; x < combos2.size() ; x++){
-            vector<int> eachCom = combos2[x];
+            vector<int>eachCom = combos2[x];
 
             //adding each element in eachCom by pivot
             for(int y = 0 ; y < eachCom.size(); y++){
@@ -186,7 +185,7 @@ void genBlocks(vector<ELEMENT> v, int pivot){
 
 
             for(int m = 0 ; m  < combos2.size(); m++){
-                vector<int> aCombinedCombo;
+                vector<int> aCombinedCombo;//(combos1[l]);
                 
                 vector<int> combB = combos2[m];
 
@@ -229,17 +228,12 @@ void genBlocks(vector<ELEMENT> v, int pivot){
 
 
     }
-    //return blocksGen;
+    return blocksGen;
 }
 
-
-
-
-int main(){
-
-//Reading in the files
+int filesInput(){
+    //Reading in the files
     FILE *fp = fopen("keys.txt", "r");
-
 
 
 
@@ -256,7 +250,6 @@ int main(){
 
 //print out the keys
 /*for(int j = 0 ; j < sizeof(keys)/sizeof(long long); j ++){
-
   printf("%lli\n",keys[j]);
 }*/
 
@@ -265,8 +258,9 @@ int main(){
     char buffer[5000] ; //big enough for 500 numbers
     char *record;
     char *line;
+    int i=0,j=0;
 
-    static double mat[ROWS][COLS];
+    
     FILE *fstream = fopen("data.txt","r");
     if(fstream == NULL)
     {
@@ -274,47 +268,37 @@ int main(){
         return -1 ;
     }
 
-    int i=0;
-    for(int i = 0 ; i < ROWS; i ++){
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        //always restart j whenever you get a new row
+        j =0;
+        record = strtok(line,",");
+        while(record != NULL)
+        {
 
-       line=fgets(buffer,sizeof(buffer),fstream);
+            //printf("recodrd: %s\n",record) ;
+            mat[i][j++] = atof(record) ;
+            record = strtok(NULL,",");
 
-        if(line == NULL) {
-            break;
         }
-        
-        
-            //always restart j whenever you get a new row
-            //j =0;
-            //,j=0;
 
-          
-                record = strtok(line,",");
-                for(int j = 0 ; j < COLS; j++){
-                    
+        //increasing row number
+        ++i ;
 
-                    while(record != NULL)
-                    {
-
-                        //printf("recodrd: %s\n",record) ;
-                        mat[i][j] = atof(record) ;
-                        record = strtok(NULL,",");
-
-                    }
-                }
-
-                //increasing row number
-                ++i ;
-            
-
-        
     }
 
 
+}
+
+
+int main(){
+    //get files inputted into program
+    filesInput();
 
     //sorting and generating the column by column
     //for(int k = 0; k < COLS; k++ ){
-    static ELEMENT justAColumn[ROWS];
+
+    vector<ELEMENT> justAColumn(ROWS);
     for(int x = 0 ; x < ROWS; x++){
 
         ELEMENT el;
@@ -328,10 +312,13 @@ int main(){
     }
 
 
-    qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
-    
+   sort(justAColumn.begin(), justAColumn.end(), lowHigh);
 
-
+    for (int k = 0; k < 4400; ++k)
+    {
+        
+        printf("%i %f\n", k, justAColumn[k] );
+    }
 
     //generating blocks using an array of blocks with the hashed signature index
     int n = 6;
@@ -376,5 +363,3 @@ int main(){
 
 //}
 }
-
-
