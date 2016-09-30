@@ -14,7 +14,7 @@ typedef struct ELEMENTS
             && col == other.col
             && datum == other.datum);
   }*/
-
+   bool operator() (struct ELEMENTS i,struct ELEMENTS j) { return (i.datum<j.datum);}
 }ELEMENT;
 
 

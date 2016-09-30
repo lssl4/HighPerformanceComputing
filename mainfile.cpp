@@ -9,13 +9,16 @@ That is row 1 would correspond to key 1 in the key array
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <iostream>
+
+
 
 using namespace std;
 
 //c++ directives
 #include <unordered_map>
 #include <vector>
+#include <iostream>
+#include <algorithm>
 //#include <unordered_set>
 #include "type.h"
 
@@ -42,6 +45,7 @@ int lowToHigh(const void *a, const void *b){
 
 }
 
+bool lowHigh (ELEMENT i,ELEMENT j) { return (i.datum<j.datum); }
 
 
 /*
@@ -300,7 +304,8 @@ int main(){
 
     //sorting and generating the column by column
     //for(int k = 0; k < COLS; k++ ){
-    static ELEMENT justAColumn[ROWS];
+
+    vector<ELEMENT> justAColumn(ROWS);
     for(int x = 0 ; x < ROWS; x++){
 
         ELEMENT el;
@@ -314,8 +319,9 @@ int main(){
     }
 
 
-    qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
-    
+    //qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
+    std::sort(justAColumn.begin(), justAColumn.end(), lowHigh);
+
     for (int k = 0; k < 4400; ++k)
     {
         /* code */
