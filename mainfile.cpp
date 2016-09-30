@@ -33,19 +33,11 @@ using namespace std;
 
 unordered_map<long long int, vector<BLOCK>> collisionTable;
 long long keys[ROWS];
+static double mat[ROWS][COLS];
 
-
-int lowToHigh(const void *a, const void *b){
-    if ( (*((ELEMENT*)a)).datum > (*((ELEMENT*)b)).datum)
-        return 1;
-    else if ((*((ELEMENT*)a)).datum  < (*((ELEMENT*)b)).datum )
-        return -1;
-    else
-        return 0;
-
+bool lowHigh (ELEMENT i,ELEMENT j) { 
+    return (i.datum<j.datum); 
 }
-
-bool lowHigh (ELEMENT i,ELEMENT j) { return (i.datum<j.datum); }
 
 
 /*
@@ -239,14 +231,9 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     return blocksGen;
 }
 
-
-
-
-int main(){
-
-//Reading in the files
+int filesInput(){
+    //Reading in the files
     FILE *fp = fopen("keys.txt", "r");
-
 
 
 
@@ -273,7 +260,7 @@ int main(){
     char *line;
     int i=0,j=0;
 
-    static double mat[ROWS][COLS];
+    
     FILE *fstream = fopen("data.txt","r");
     if(fstream == NULL)
     {
@@ -301,6 +288,12 @@ int main(){
     }
 
 
+}
+
+
+int main(){
+    //get files inputted into program
+    filesInput();
 
     //sorting and generating the column by column
     //for(int k = 0; k < COLS; k++ ){
@@ -319,12 +312,11 @@ int main(){
     }
 
 
-    //qsort(justAColumn, ROWS, sizeof(ELEMENT), lowToHigh);
-    std::sort(justAColumn.begin(), justAColumn.end(), lowHigh);
+   sort(justAColumn.begin(), justAColumn.end(), lowHigh);
 
     for (int k = 0; k < 4400; ++k)
     {
-        /* code */
+        
         printf("%i %f\n", k, justAColumn[k] );
     }
 
