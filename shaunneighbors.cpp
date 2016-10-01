@@ -50,6 +50,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         vector<ELEMENT> v1;
         vector<ELEMENT> v2;
         int pivot = 1;
+
         v1.push_back(s[start]);
 
 
@@ -63,11 +64,10 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
             if( ( (1000000.0*s[j].datum)-(1000000.0*s[start].datum) )< (1000000.0*dia) ){
 
 
-
-
-                printf("Pushed in: %f\n",s[j].datum );
                 v1.push_back(s[j]);
                 //pivot=j;
+
+                cout << "Pushed in v1: " << s[j].datum <<endl;
                 
             }
 
@@ -78,7 +78,19 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     break;
                 }*/
 
-                //if there's no more elements to be added, get pivot if any
+
+                
+                break;
+            }
+
+            
+
+
+
+        }
+
+        
+                  //if there's no more elements to be added, get pivot if any
                 if(listOfNeigh.size() >0){
 
                     vector<ELEMENT> prevVector = listOfNeigh.back();
@@ -88,7 +100,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     int prevVectRow = prevVector[prevVector.size()-2].row;
                     int currVectRow = v1.front().row;
 
-                    printf("prevVect: %i currVect: %i\n", prevVectRow, currVectRow );
 
                     if(prevVectRow - currVectRow >=0 ){
                         pivot = prevVectRow - currVectRow +1;
@@ -104,7 +115,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
 
 
-                    //push back the pivot number with the neighborhood vector. pivot appears at the end of vector
+                    //push back the pivot number in the neighborhood vector as an element. pivot appears at the end of vector
                     ELEMENT pivotEl;
                     pivotEl.datum = pivot;
 
@@ -112,14 +123,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
                     //after finding the longest neighborhood, push it in the list 
                     listOfNeigh.push_back(v1);
-
-                
-                break;
-            }
-
-            
-
-        }
 
 
 
