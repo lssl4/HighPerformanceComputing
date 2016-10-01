@@ -45,7 +45,7 @@ vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
     vector<vector<int>> listOfCombos;
 
-
+   // cout << "n: " << n << " r: " << r << endl;
 
     //generates the eachCom with numbers up to r
     for (int i = 0; i < r; i++){
@@ -89,7 +89,7 @@ After the 4 element combos have been generated and modified, generate the blocks
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
 
-    cout << "\nc size: "<< c.size() << " vect: "<< vect.size() << endl;
+   // cout << "\nc size: "<< c.size() << " vect: "<< vect.size() << endl;
      //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
         for(int k = 0; k < c.size(); k++){
             
@@ -101,15 +101,15 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
             BLOCK newBlock;
 
             for(int j = 0 ;j < numOfElements; j++){
-                cout << "c[k][j]: " << c[k][j]  << endl;
+               // cout << "c[k][j]: " << c[k][j]  << endl;
 
                 ELEMENT el = vect[c[k][j]];
 
                 newBlock.rowIds.push_back(el.row);
                 newBlock.col = el.col;
 
-                cout << "sscue" << endl;
-                 cout << "el.row: "<<el.row << endl;
+               
+                // cout << "el.row: "<<el.row << endl;
                 keysSum += keys[el.row];
 
                
@@ -145,6 +145,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
     if(pivot==v.size()-1){
 
+        //cout << "n ((int)v.size()-1): " << (int)v.size()-1 << "r: " << r<<endl;
         combos1 = genCombos((int)v.size()-1, r);
 
        pushToCollisionTable(combos1, v);
@@ -170,7 +171,9 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
           //iteratively decreasing r for the first combos
          combos1 = genCombos(pivot, r-k-1);
-        cout <<"aFter combos1"<<endl;
+
+
+        cout <<"aFter combos1. combos1 size: " << combos1.size()<<endl;
 
        // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
 
@@ -179,6 +182,9 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
          //iteratively increasing r for the second combos
          combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
+
+        cout <<"aFter combos2. combos2 size: " << combos2.size()<<endl;
+
 
         //adding all of the combos by pivot in combos2 to match the latter half of array indices
          for(int x = 0; x < combos2.size() ; x++){
@@ -337,15 +343,15 @@ int main(){
 
     //callshaunneighbors where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
-
-    /*for (int k = 0; k < ROWS; ++k)
+     cout << "Output size: "<<output.size() << endl;
+    /*for (int k = 0; k < output.size(); ++k)
     {   
         vector<ELEMENT> n = output[k];
 
         for(int l = 0 ; l < n.size(); l++ )
-            printf("%i %f\n", k, n[l].datum );
+            printf("Size of vector: %i %i %f\n", n.size(),k, n[l].datum );
     }*/
-        cout << "Output size: "<<output.size() << endl;
+       
 
    for(int k = 0; k < output.size(); k ++){
 

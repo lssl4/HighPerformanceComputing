@@ -44,7 +44,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         //v1.push_back(s[start]);
 
-        printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
+       // printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
 
 
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
@@ -56,13 +56,13 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         }
 
-        cout << "v1 after start: " <<start << endl;
+       // cout << "v1 after start: " <<start << endl;
         for (int i = 0; i < v1.size(); ++i)
         {
-            printf("%.7f ", v1[i].datum);
+            //printf("%.7f ", v1[i].datum);
         }
 
-        cout << endl << endl;
+       
 
         //for each trailing s after start, check if it's within neighborhood. vectorsize -2 
         //because of pivot number at end and shifting everything to the right by previous list size
@@ -73,8 +73,8 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
          
 
 
-            printf("j: %i start: %i\n", j, start);
-            printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*DIA) );
+           // printf("j: %i start: %i\n", j, start);
+            //printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*DIA) );
 
 
             if( j < s.size() && ( (1000000.0*s[j].datum)-(1000000.0*s[start].datum) )< (1000000.0*DIA) ){
@@ -83,7 +83,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                 v1.push_back(s[j]);
               
 
-                cout << "Pushed in v1: " << s[j].datum <<endl;
+                //cout << "Pushed in v1: " << s[j].datum <<endl;
                 
             }
 
@@ -106,7 +106,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
                     if(prevVectRow - currVectRow >=0 ){
                         pivot = prevVectRow - currVectRow +1;
-                        printf("pivot: %i\n", pivot);
+                       // printf("pivot: %i\n", pivot);
                     }else{
                         //if rows don't overlap then just put the vector size as the pivot
                          pivot = v1.size();
@@ -118,7 +118,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     pivot = v1.size();
                 }
 
-                //if(v1.size() >=4){
+                if(v1.size() >=4){
                     //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
                     ELEMENT pivotEl;
                     pivotEl.datum = pivot;
@@ -128,20 +128,20 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     listOfNeigh.push_back(v1);
 
 
-                    printf("Just pushed into listOfNeigh\n");
+                   // printf("Just pushed into listOfNeigh\n");
 
                     for (int x = 0; x < v1.size(); ++x)
                     {
                         /* code */
-                        printf("%.7f \n", v1[x].datum);
+                        //printf("%.7f \n", v1[x].datum);
                     }
-                    cout << endl;
-                //  }
+                    
+                  }
 
 
                        //update prevLastIndex with jth element which indicates which elements have been seen
                 prevLastIndex = j;
-                cout << "prevLastIndex: " << prevLastIndex <<endl;
+                //cout << "prevLastIndex: " << prevLastIndex <<endl;
                 
                 
                 break;
@@ -164,8 +164,8 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
 
 
-/*
-int main(){
+
+/*int main(){
     
     vector<ELEMENT> element;
     for(int x = 0 ; x < sample.size(); x++){
