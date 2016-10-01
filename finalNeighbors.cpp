@@ -120,7 +120,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     listOfNeigh.push_back(v1);
 
 
-                    printf("Just pushed into listOfNeigh\n");
+                    printf("Just pushed in v1\n");
 
                     for (int x = 0; x < v1.size(); ++x)
                     {

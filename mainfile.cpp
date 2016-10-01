@@ -20,7 +20,7 @@ using namespace std;
 #include <iostream>
 #include <algorithm>
 //#include <unordered_set>
-#include "type.h"
+
 
 
 #define ROWS 4400
@@ -28,16 +28,14 @@ using namespace std;
 #define DIA 0.000001
 //#define BLOCKLISTSIZE 400000000000
 
-
+#include "type.h"
+#include "shaunneighbors.cpp" 
 
 
 unordered_map<long long int, vector<BLOCK>> collisionTable;
 long long keys[ROWS];
 static double mat[ROWS][COLS];
 
-bool lowHigh (ELEMENT i,ELEMENT j) { 
-    return (i.datum<j.datum); 
-}
 
 
 /*
@@ -114,6 +112,8 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> v){
 
             //add to collision table, if it doesn't exist, it makes a new entry
             collisionTable[keysSum].push_back(newBlock);
+
+            printf("Just pushed newBlock\n");
         }
 }
 
@@ -155,11 +155,16 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
          //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
 
+        cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
+
           //iteratively decreasing r for the first combos
          combos1 = genCombos(pivot, r-k-1);
         cout <<"aFter combos1"<<endl;
 
        // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
+
+
+        cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
 
          //iteratively increasing r for the second combos
          combos2 = genCombos((int)(v.size()-pivot), k+1);
@@ -303,43 +308,37 @@ int main(){
 
         ELEMENT el;
         el.row = x;
-        el.col = 0;
+        el.col = 5;
         el.datum =  mat[x][0];
 
 
         justAColumn[x] = el;
 
+
+
     }
 
 
-   sort(justAColumn.begin(), justAColumn.end(), lowHigh);
-
-    for (int k = 0; k < 4400; ++k)
-    {
-        
-        printf("%i %f\n", k, justAColumn[k] );
-    }
-    //after sorting, generate neighborhoods
-    vector<ELEMENT> neighA = 
-
-    //demo of genBlocks
-    int n = 6;
-    ELEMENT elarray[n];
-    for(int k = 0; k < n; k++){
-        elarray[k].row = k;
-        elarray[k].col = 1;
-        elarray[k].datum = 1;
-    }
 
 
-    vector<ELEMENT> v;
-    for(int k = 0; k < n; k++){
-        v.push_back(elarray[k]);
-    }
 
+    //callshaunneighbors where the column will be sorted in the function. Returns a list of neighborhoods
+    vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
 
-    //generate blocks
-    genBlocks(v,4);
+    /*for (int k = 0; k < ROWS; ++k)
+    {   
+        vector<ELEMENT> n = output[k];
+
+        for(int l = 0 ; l < n.size(); l++ )
+            printf("%i %f\n", k, n[l].datum );
+    }*/
+        cout << "Output size: "<<output.size() << endl;
+
+   for(int k = 0; k < output.size(); k ++){
+
+    cout << "Size of Output: "<< output.size()<<"(output[k][output[k].size()-2]).datum: " << (output[k][output[k].size()-2]).datum << endl;
+    genBlocks(output[k], (output[k][output[k].size()-2]).datum );
+   }
 
 
     //printing out collision table
