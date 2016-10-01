@@ -1,6 +1,6 @@
 
 
-/*#include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -16,7 +16,7 @@ using namespace std;
 
 
 vector<double> sample = {0.0004520,0.0004525, 0.0004531, 0.0004532, 0.0004533, 0.0004534, 0.0004535, 0.0004535,0.000454,0.000454,0.000458,0.000459, 0.00046, 0.0004601, 0.0004602, 0.0004603, 0.0004604};
-*/
+
 
 bool lowHigh (ELEMENT i, ELEMENT j) { 
     return (i.datum<j.datum); 
@@ -46,7 +46,15 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
 
-        v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
+
+        //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
+        //v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
+
+        for(int k = start ; k < prevLastIndex; k++){
+
+            v1.push_back(s[k]);
+
+        }
 
         cout << "v1 after start: " <<start << endl;
         for (int i = 0; i < v1.size(); ++i)
@@ -110,7 +118,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     pivot = v1.size();
                 }
 
-                if(v1.size() >=4){
+                //if(v1.size() >=4){
                     //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
                     ELEMENT pivotEl;
                     pivotEl.datum = pivot;
@@ -128,7 +136,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                         printf("%.7f \n", v1[x].datum);
                     }
                     cout << endl;
-                }
+                //  }
 
 
                        //update prevLastIndex with jth element which indicates which elements have been seen
@@ -157,7 +165,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
 
 
-/*int main(){
+int main(){
     
     vector<ELEMENT> element;
     for(int x = 0 ; x < sample.size(); x++){
@@ -183,5 +191,5 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         cout<< endl;
     }
-}*/
+}
 

@@ -29,7 +29,7 @@ using namespace std;
 //#define BLOCKLISTSIZE 400000000000
 
 #include "type.h"
-#include "shaunneighbors.cpp" 
+#include "finalNeighbors.cpp" 
 
 
 unordered_map<long long int, vector<BLOCK>> collisionTable;
@@ -86,12 +86,13 @@ vector<vector<int>> genCombos(int n, int r) {
 /*
 After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable 
 */
-void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> v){
+void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
 
+    cout << "\nc size: "<< c.size() << " vect: "<< vect.size() << endl;
      //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
         for(int k = 0; k < c.size(); k++){
-
+            
 
 
             //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
@@ -100,12 +101,22 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> v){
             BLOCK newBlock;
 
             for(int j = 0 ;j < numOfElements; j++){
-                ELEMENT el = v[c[k][j]];
+                cout << "c[k][j]: " << c[k][j]  << endl;
+
+                ELEMENT el = vect[c[k][j]];
+
                 newBlock.rowIds.push_back(el.row);
                 newBlock.col = el.col;
+
+                cout << "sscue" << endl;
+                 cout << "el.row: "<<el.row << endl;
                 keysSum += keys[el.row];
 
+               
+                 
+
             }
+           
 
             //Assign keysSum to signature of block
             newBlock.signature = keysSum;
@@ -120,7 +131,7 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> v){
 
 
 /*
-Generate blocks given a vector of ELEMENTS and pivot
+Generate blocks given a vector of ELEMENTS and pivot. v.size() -1 because it also contains the pivot at the end
 */
 int genBlocks(vector<ELEMENT> v, int pivot){
 
@@ -132,9 +143,9 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
 
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
-    if(pivot==v.size()){
+    if(pivot==v.size()-1){
 
-        combos1 = genCombos((int)v.size(), r);
+        combos1 = genCombos((int)v.size()-1, r);
 
        pushToCollisionTable(combos1, v);
 
@@ -142,12 +153,12 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     }else{
 
      
-      if(pivot <v.size()&& pivot >= 0 ){
+      if(pivot <(v.size() -1)&& pivot >= 0 ){
         for(int k = 0 ; k < r; k++){
 
             int n1 = pivot; 
             int r1 = r-k-1;
-            int n2 = (int)(v.size()-pivot);
+            int n2 = (int)((v.size()-1)-pivot);
             int r2 = k+1;
 
             if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
@@ -167,16 +178,17 @@ int genBlocks(vector<ELEMENT> v, int pivot){
         cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
 
          //iteratively increasing r for the second combos
-         combos2 = genCombos((int)(v.size()-pivot), k+1);
+         combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
 
         //adding all of the combos by pivot in combos2 to match the latter half of array indices
          for(int x = 0; x < combos2.size() ; x++){
             vector<int>eachCom = combos2[x];
-
+            
             //adding each element in eachCom by pivot
             for(int y = 0 ; y < eachCom.size(); y++){
 
                 eachCom[y] = eachCom[y] + pivot;
+               
             }
             
             combos2[x] = eachCom;
@@ -209,6 +221,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                 
 
             }
+             
 
          }
 
@@ -308,7 +321,7 @@ int main(){
 
         ELEMENT el;
         el.row = x;
-        el.col = 5;
+        el.col = 0;
         el.datum =  mat[x][0];
 
 
@@ -336,8 +349,8 @@ int main(){
 
    for(int k = 0; k < output.size(); k ++){
 
-    cout << "Size of Output: "<< output.size()<<"(output[k][output[k].size()-2]).datum: " << (output[k][output[k].size()-2]).datum << endl;
-    genBlocks(output[k], (output[k][output[k].size()-2]).datum );
+    //  cout << "Size of Output: "<< endl << output.size()<<"(output[k][output[k].size()-2]).datum: " << (output[k][output[k].size()-2]).datum << endl;
+    genBlocks(output[k], (output[k][output[k].size()-1]).datum );
    }
 
 

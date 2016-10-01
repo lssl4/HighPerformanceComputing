@@ -46,7 +46,15 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
 
-        v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
+
+        //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
+        //v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
+
+        for(int k = start ; k < prevLastIndex; k++){
+
+            v1.push_back(s[k]);
+
+        }
 
         cout << "v1 after start: " <<start << endl;
         for (int i = 0; i < v1.size(); ++i)
@@ -110,7 +118,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     pivot = v1.size();
                 }
 
-                if(v1.size() >=4){
+                //if(v1.size() >=4){
                     //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
                     ELEMENT pivotEl;
                     pivotEl.datum = pivot;
@@ -120,7 +128,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     listOfNeigh.push_back(v1);
 
 
-                    printf("Just pushed in v1\n");
+                    printf("Just pushed into listOfNeigh\n");
 
                     for (int x = 0; x < v1.size(); ++x)
                     {
@@ -128,7 +136,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                         printf("%.7f \n", v1[x].datum);
                     }
                     cout << endl;
-                }
+                //  }
 
 
                        //update prevLastIndex with jth element which indicates which elements have been seen
@@ -156,8 +164,8 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
 
 
-
-/*int main(){
+/*
+int main(){
     
     vector<ELEMENT> element;
     for(int x = 0 ; x < sample.size(); x++){
