@@ -22,7 +22,7 @@ bool lowHigh (ELEMENT i, ELEMENT j) {
 }
 
     
-    vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
+vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
     
     vector<vector<ELEMENT>> listOfNeigh;
     int prevLastIndex = 0;
@@ -73,18 +73,12 @@ bool lowHigh (ELEMENT i, ELEMENT j) {
             //if j is not within the dia distance, break and add the vector so far to the list
             else{
 
-                
-                //update prevLastIndex with jth element that is just right out of bounds
-                prevLastIndex = j;
-                cout << "prevLastIndex: " << prevLastIndex <<endl;
-                break;
-            }
+                //if no new elements are added and j is still at prev index then break 
+                if(j == prevLastIndex){
+                    break;
+                }
 
-
-
-        }
-
-                  //if there's no more elements to be added, append pivot to the vector
+                 //if there's no more elements to be added, append pivot to the vector
                 if(listOfNeigh.size() >0){
 
                      vector<ELEMENT> prevVector = listOfNeigh.back();
@@ -124,6 +118,18 @@ bool lowHigh (ELEMENT i, ELEMENT j) {
                         printf("%.7f \n", v1[x].datum);
                     }
                     cout << endl;
+                
+                //update prevLastIndex with jth element that is just right out of bounds
+                prevLastIndex = j;
+                cout << "prevLastIndex: " << prevLastIndex <<endl;
+                break;
+            }
+
+
+
+        }
+
+                 
     }
 
     
