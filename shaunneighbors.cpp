@@ -25,6 +25,8 @@ bool lowHigh (ELEMENT i, ELEMENT j) {
 vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
     
     vector<vector<ELEMENT>> listOfNeigh;
+
+    //index of the last seen element in array s
     int prevLastIndex = 0;
 
     //sort s
@@ -58,14 +60,19 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //must set to <= because 
         for(int j = prevLastIndex; j <= s.size() ; j++){
           
+
+         
+
+
             printf("j: %i start: %i\n", j, start);
             printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*dia) );
 
-            if( j <s.size() &&( (1000000.0*s[j].datum)-(1000000.0*s[start].datum) )< (1000000.0*dia) ){
+
+            if( j < s.size() && ( (1000000.0*s[j].datum)-(1000000.0*s[start].datum) )< (1000000.0*dia) ){
 
 
                 v1.push_back(s[j]);
-                //pivot=j;
+              
 
                 cout << "Pushed in v1: " << s[j].datum <<endl;
                 
@@ -83,28 +90,29 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                 if(listOfNeigh.size() >0){
 
                      vector<ELEMENT> prevVector = listOfNeigh.back();
+
+                     //gets the row value of the last vector in listOfNeigh. -2 because the pivot is at the end of the vector
                     int prevVectRow = prevVector[prevVector.size()-2].row;
                     int currVectRow = v1.front().row;
-
 
                     if(prevVectRow - currVectRow >=0 ){
                         pivot = prevVectRow - currVectRow +1;
                         printf("pivot: %i\n", pivot);
                     }else{
+                        //if rows don't overlap then just put the vector size as the pivot
                          pivot = v1.size();
                     }
 
                         
-                    
+                //if no vector in list then just do vector size    
                 }else{
                     pivot = v1.size();
                 }
 
 
-                    //push back the pivot number in the neighborhood vector as an element. pivot appears at the end of vector
+                    //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
                     ELEMENT pivotEl;
                     pivotEl.datum = pivot;
-
                     v1.push_back(pivotEl);
 
                     //after finding the longest neighborhood, push it in the list 
@@ -119,10 +127,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                         printf("%.7f \n", v1[x].datum);
                     }
                     cout << endl;
-                
-                //update prevLastIndex with jth element that is just right out of bounds
+
+                       //update prevLastIndex with jth element which indicates which elements have been seen
                 prevLastIndex = j;
                 cout << "prevLastIndex: " << prevLastIndex <<endl;
+                
+                
                 break;
             }
 
