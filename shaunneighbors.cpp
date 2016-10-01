@@ -33,9 +33,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
     //sort s
     sort(s.begin(), s.end(), lowHigh);
 
-    for(int x = 0 ; x < s.size(); x++)
-    printf("%f ", s[x]);
-    printf("\n");
+
 
     for (int i = 0; i < s.size(); ++i)
     {
@@ -57,28 +55,15 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         //for each trailing s after start, check if it's within neighborhood. vectorsize -2 
         //because of pivot number at end and shifting everything to the right by previous list size
-        for(int j =  listOfNeigh.size() > 0 ? start + listOfNeigh.back().size() -1: start +1 ;j < s.size() ; j++){
+        for(int j = start +1 ;j < s.size() ; j++){
           
             printf("j: %i start: %i\n", j, start);
-            printf("%.12f - %.12f = %.12f | %i\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*dia) );
+            printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*dia) );
 
             if( ( (1000000.0*s[j].datum)-(1000000.0*s[start].datum) )< (1000000.0*dia) ){
 
 
 
-                if(listOfNeigh.size() > 0 && (j == start + listOfNeigh.back().size() -1)){
-
-                    v2 = listOfNeigh.back();
-                    cout << "v2: ";
-                    for(int x = 0 ; x < v2.size(); x++){
-
-
-                        printf("%f ", v2[x] );
-                    }
-                    cout << endl;
-
-                    v1.insert(v1.end(), v2.begin()+1, v2.end());
-                }
 
                 printf("Pushed in: %f\n",s[j].datum );
                 v1.push_back(s[j]);
@@ -93,10 +78,27 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     break;
                 }*/
 
-                //if there's no more elements to be added, 
+                //if there's no more elements to be added, get pivot if any
                 if(listOfNeigh.size() >0){
-                    pivot = listOfNeigh.back().size()-2;
-                    printf("pivot: %i\n", pivot);
+
+                    vector<ELEMENT> prevVector = listOfNeigh.back();
+
+                 
+
+                    int prevVectRow = prevVector[prevVector.size()-2].row;
+                    int currVectRow = v1.front().row;
+
+                    printf("prevVect: %i currVect: %i\n", prevVectRow, currVectRow );
+
+                    if(prevVectRow - currVectRow >=0 ){
+                        pivot = prevVectRow - currVectRow +1;
+                        printf("pivot: %i\n", pivot);
+                    }
+
+                        
+                    
+                }else{
+                    pivot = v1.size();
                 }
 
 
@@ -151,6 +153,8 @@ int main(){
         element.push_back(el);
 
     }
+
+
 
     //vector<double> v1;
     vector<vector<ELEMENT>> output = getNeighbours(element);
