@@ -15,7 +15,7 @@ using namespace std;
 //#include <algorithm>
 #include "type.h"
 
-vector<double> sample={0.0004520,0.0004525, 0.0004531, 0.0004532, 0.0004533, 0.0004534, 0.0004535, 0.0004535,0.000454,0.000454,0.000458,0.000459, 0.00046, 0.0004601, 0.0004602, 0.0004603, 0.0004604};
+vector<double> sample = {0.0004520,0.0004525, 0.0004531, 0.0004532, 0.0004533, 0.0004534, 0.0004535, 0.0004535,0.000454,0.000454,0.000458,0.000459, 0.00046, 0.0004601, 0.0004602, 0.0004603, 0.0004604};
 
 
 
@@ -138,7 +138,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
 
 int main(){
-
+    
     vector<ELEMENT> element;
     for(int x = 0 ; x < sample.size(); x++){
 
@@ -148,7 +148,7 @@ int main(){
         el.datum = sample[x];
 
 
-        element[x] = el;
+        element.push_back(el);
 
     }
 
