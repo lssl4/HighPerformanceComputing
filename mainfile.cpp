@@ -320,7 +320,7 @@ int main(){
         printf("%i %f\n", k, justAColumn[k] );
     }
     //after sorting, generate neighborhoods
-
+    vector<ELEMENT> neighA = 
 
     //demo of genBlocks
     int n = 6;
