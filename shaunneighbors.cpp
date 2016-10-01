@@ -31,8 +31,8 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
     sort(s.begin(), s.end(), lowHigh);
 
 
-    //for each s in the array, find its neighborhood, including the last s even though there's no more trailing elements after it. 
-    for (int start = 0; start < s.size(); start++)
+    //for element in s, find its neighborhood. skip finding neigbourhoods when all elements have been seen
+    for (int start = 0; start < s.size() && prevLastIndex < s.size(); start++)
 
     {
         vector<ELEMENT> v1;
@@ -55,6 +55,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
         //for each trailing s after start, check if it's within neighborhood. vectorsize -2 
         //because of pivot number at end and shifting everything to the right by previous list size
+        //must set to <= because 
         for(int j = prevLastIndex; j <= s.size() ; j++){
           
             printf("j: %i start: %i\n", j, start);
