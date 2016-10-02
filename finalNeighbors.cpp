@@ -1,23 +1,5 @@
 
 
-/*#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <cmath>
-#include <algorithm>
-#define DIA 0.000001
-
-using namespace std;
-#include <unordered_set>
-#include <iostream>
-#include <vector>
-#include "type.h"
-
-
-vector<double> sample = {0.0004520,0.0004525, 0.0004531, 0.0004532, 0.0004533, 0.0004534, 0.0004535, 0.0004535,0.000454,0.000454,0.000458,0.000459, 0.00046, 0.0004601, 0.0004602, 0.0004603, 0.0004604};
-*/
-
 bool lowHigh (ELEMENT i, ELEMENT j) { 
     return (i.datum<j.datum); 
 }
@@ -186,31 +168,5 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
 
 
-/*int main(){
-    
-    vector<ELEMENT> element;
-    for(int x = 0 ; x < sample.size(); x++){
 
-        ELEMENT el;
-        el.row = x;
-        el.col = 0;
-        el.datum = sample[x];
-
-
-        element.push_back(el);
-
-    }
-
-    vector<vector<ELEMENT>> output = getNeighbours(element);
-
-    for(int i = 0; i < output.size(); i++){
-        vector<ELEMENT> neigh = output[i];
-        for(int j = 0; j < neigh.size(); j ++){
-
-            cout<< neigh[j].datum << " ";
-        }
-
-        cout<< endl;
-    }
-}*/
 
