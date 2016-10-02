@@ -60,7 +60,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
 
         
-        cout<< "start: " << start << " prevLast: " << prevLastIndex<< endl;
+        cout<< "\nstart: " << start << " prevLast: " << prevLastIndex<< endl;
         cout << "v1 should have:\n";
 
         for(int k = start ; k < prevLastIndex; k++){
@@ -71,7 +71,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
             cout << s[k].datum << endl;
         }
-        cout << endl;
+      
 
 
        // cout << "v1 after start: " <<start << endl;

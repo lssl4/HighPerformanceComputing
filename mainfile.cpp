@@ -342,7 +342,7 @@ int main(){
 
     //callshaunneighbors where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
-    
+
      cout << "Output size: "<<output.size() << endl;
     /*for (int k = 0; k < output.size(); ++k)
     {   
