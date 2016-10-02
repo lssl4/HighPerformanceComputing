@@ -35,13 +35,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
             prevLastIndex++;
         }
 
-        //v1.push_back(s[start]);
+        
 
        // printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
 
 
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
-        //v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
 
         
         cout<< "\nstart: " << start << " prevLast: " << prevLastIndex<< endl;
@@ -79,7 +78,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
             //printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*DIA) );
 
 
-            if( j < s.size() && ( fabs((s[j].datum)-(s[start].datum)) )< DIA -EPSILON ){
+            if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*DIA) ){
 
 
                 v1.push_back(s[j]);

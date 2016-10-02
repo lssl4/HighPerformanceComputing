@@ -9,6 +9,7 @@ That is row 1 would correspond to key 1 in the key array
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <omp.h>
 
 
 
@@ -19,14 +20,11 @@ using namespace std;
 #include <vector>
 #include <iostream>
 #include <algorithm>
-//#include <unordered_set>
-
 
 
 #define ROWS 4400
 #define COLS 500
 #define DIA 0.000001
-//#define BLOCKLISTSIZE 400000000000
 
 #include "type.h"
 #include "finalNeighbors.cpp" 
@@ -319,7 +317,7 @@ int main(){
     filesInput();
 
     //sorting and generating the column by column
-    for(int k = 0; k < COLS-1; k++ ){
+    //for(int k = 0; k < COLS-1; k++ ){
 
     vector<ELEMENT> justAColumn(ROWS);
     for(int x = 0 ; x < ROWS; x++){
@@ -327,7 +325,7 @@ int main(){
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][k];
+        el.datum =  mat[x][0];
 
 
         justAColumn[x] = el;
@@ -386,5 +384,5 @@ int main(){
      
 
 
-}
+//}
 }
