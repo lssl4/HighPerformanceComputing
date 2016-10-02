@@ -124,7 +124,6 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
             //add to collision table, if it doesn't exist, it makes a new entry
             collisionTable[keysSum].push_back(newBlock);
 
-            printf("Just pushed newBlock\n");
         }
 }
 
@@ -146,7 +145,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     if(pivot==v.size()-1){
 
         //cout << "n ((int)v.size()-1): " << (int)v.size()-1 << "r: " << r<<endl;
-        combos1 = genCombos((int)v.size()-1, r);
+        combos1 = genCombos( ((int)v.size())-1, r);
 
        pushToCollisionTable(combos1, v);
 
@@ -343,6 +342,7 @@ int main(){
 
     //callshaunneighbors where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
+    
      cout << "Output size: "<<output.size() << endl;
     /*for (int k = 0; k < output.size(); ++k)
     {   

@@ -24,15 +24,19 @@ bool lowHigh (ELEMENT i, ELEMENT j) {
 
     
 vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
-    
+
+   
+
+
     vector<vector<ELEMENT>> listOfNeigh;
 
     //index of the last seen element in array s
-    int prevLastIndex = 0;
+    int prevLastIndex = 1;
 
     //sort s
     sort(s.begin(), s.end(), lowHigh);
 
+    
 
     //for element in s, find its neighborhood. skip finding neigbourhoods when all elements have been seen
     for (int start = 0; start < s.size() && prevLastIndex < s.size(); start++)
@@ -42,6 +46,11 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
        
         int pivot = 1;
 
+        //when start equals to prevLastIndex, move prevlastIndex by one
+        if(prevLastIndex == start){
+            prevLastIndex++;
+        }
+
         //v1.push_back(s[start]);
 
        // printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
@@ -50,17 +59,26 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
         //v1.insert(v1.end(), s.begin() + start,  s.begin() + prevLastIndex );
 
-        for(int k = start ; k < prevLastIndex; k++){
+        
+        cout<< "start: " << start << " prevLast: " << prevLastIndex<< endl;
+        cout << "v1 should have:\n";
 
+        for(int k = start ; k < prevLastIndex; k++){
+            cout<< "K: " << k << " prevLast: " << prevLastIndex<< endl;
+
+            //cout<< "K: " << k << "prevLast: " << prevLastIndex<< endl;
             v1.push_back(s[k]);
 
+            cout << s[k].datum << endl;
         }
+        cout << endl;
+
 
        // cout << "v1 after start: " <<start << endl;
-        for (int i = 0; i < v1.size(); ++i)
+        /*for (int i = 0; i < v1.size(); ++i)
         {
-            //printf("%.7f ", v1[i].datum);
-        }
+            printf("%.7f ", v1[i].datum);
+        }*/
 
        
 
@@ -69,7 +87,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //must set to <= because 
         for(int j = prevLastIndex; j <= s.size() ; j++){
           
-
+            cout <<"start: " << start << " j: " << j << endl;
          
 
 
@@ -83,7 +101,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                 v1.push_back(s[j]);
               
 
-                //cout << "Pushed in v1: " << s[j].datum <<endl;
+                cout << "Pushed in v1: " << s[j].datum <<endl;
                 
             }
 
@@ -92,9 +110,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
                 //if no new elements are added and j is still at prev index then break 
                 if(j == prevLastIndex){
+                    cout << "I skipped this list" <<endl;
                     break;
                 }
 
+
+                cout << "Accept this list" << endl;
                  //if there's no more elements to be added, append pivot to the vector
                 if(listOfNeigh.size() >0){
 
