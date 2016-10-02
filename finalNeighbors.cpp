@@ -1,6 +1,6 @@
 
 
-#define EPSILON 0.00000001
+#define EPSILON 0.0000001
 
 bool lowHigh (ELEMENT i, ELEMENT j) { 
     return (i.datum<j.datum); 
@@ -79,7 +79,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
             //printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*DIA) );
 
 
-            if( j < s.size() && ( fabs((s[j].datum)-(s[start].datum)) )< DIA &&  ( fabs( ( (s[j].datum)-(s[start].datum) )-DIA )) < EPSILON ){
+            if( j < s.size() && ( fabs((s[j].datum)-(s[start].datum)) )< DIA -EPSILON ){
 
 
                 v1.push_back(s[j]);
