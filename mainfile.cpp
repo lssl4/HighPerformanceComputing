@@ -10,7 +10,7 @@ That is row 1 would correspond to key 1 in the key array
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
-#include <sys/time.h>
+
 
 
 using namespace std;
@@ -166,7 +166,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                     //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
 
 
-                    cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
+                    //cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
 
                     //iteratively decreasing r for the first combos
                     combos1 = genCombos(pivot, r-k-1);
@@ -321,9 +321,7 @@ int filesInput(){
 int main(){
     //get files inputted into program
     filesInput();
-    struct timeval start, end;
-    double delta;
-    gettimeofday(&start, NULL);
+
     //sorting and generating the column by column
     for(int k = 0; k < COLS; k++ ){
 
@@ -409,10 +407,5 @@ int main(){
 
 
     cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
-    gettimeofday(&end, NULL);
 
-    delta = ((end.tv_sec  - start.tv_sec) * 1000000u +
-             end.tv_usec - start.tv_usec) / 1.e6;
-    printf("\n");
-    printf("time=%12.10f\n",delta);
 }
