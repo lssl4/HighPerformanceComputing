@@ -10,7 +10,7 @@ That is row 1 would correspond to key 1 in the key array
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
-
+#include <sys/time.h>
 
 
 using namespace std;
@@ -315,7 +315,9 @@ int filesInput(){
 int main(){
     //get files inputted into program
     filesInput();
-
+    struct timeval start, end;
+    double delta;
+    gettimeofday(&start, NULL);
     //sorting and generating the column by column
     for(int k = 0; k < COLS-1; k++ ){
 
@@ -389,4 +391,11 @@ int main(){
 
      
     cout<< "collisionSum: "<< collisionSum << endl;
+    
+    gettimeofday(&end, NULL);
+
+    delta = ((end.tv_sec  - start.tv_sec) * 1000000u +
+             end.tv_usec - start.tv_usec) / 1.e6;
+    printf("\n");
+    printf("time=%12.10f\n",delta);
 }
