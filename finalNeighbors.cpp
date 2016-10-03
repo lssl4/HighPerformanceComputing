@@ -7,7 +7,7 @@ bool lowHigh (ELEMENT i, ELEMENT j) {
 }
 
     
-vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
+vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
    
 
@@ -59,7 +59,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
          
 
 
-            if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*DIA) ){
+            if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*dia) ){
 
 
                 v1.push_back(s[j]);
@@ -68,7 +68,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                 
             }
 
-            //if j is not within the DIA distance, break and add the vector so far to the list
+            //if j is not within the dia distance, break and add the vector so far to the list
             else{
 
                 //if no new elements are added and j is still at prev index then break 

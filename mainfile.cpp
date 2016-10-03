@@ -22,17 +22,20 @@ using namespace std;
 #include <algorithm>
 
 
-#define ROWS 4400
-#define COLS 500
-#define DIA 0.000001
 
 #include "type.h"
-#include "finalNeighbors.cpp"
-
-
 unordered_map<long long int, vector<BLOCK>> collisionTable;
-long long keys[ROWS];
-static double mat[ROWS][COLS];
+
+long long int *keys;
+
+double **mat;
+
+
+
+
+
+
+#include "finalNeighbors.cpp"
 
 
 
@@ -116,7 +119,7 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 /*
 Generate blocks given a vector of ELEMENTS and pivot. v.size() -1 because it also contains the pivot at the end
 */
-int genBlocks(vector<ELEMENT> v, int pivot){
+int genBlocks(vector<ELEMENT> v, int pivot ){
 
     //2 combos vectors for block generations and to prevent redundant blocks
     vector<vector<int>> combos1;
@@ -185,7 +188,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
 
                         for(int m = 0 ; m  < combos2.size(); m++){
-                            vector<int> aCombinedCombo;//(combos1[l]);
+                            vector<int> aCombinedCombo;
 
                             vector<int> combB = combos2[m];
 
@@ -223,9 +226,37 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     return blocksGen;
 }
 
-int filesInput(){
-    //Reading in the files
-    FILE *fp = fopen("keys.txt", "r");
+
+
+
+int main(int argc, char* argv[]){
+
+
+    if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
+
+        printf("Please give the correct arguments: progName datafilename keysfilename rows columns dia\n");
+
+        return -1;
+    }
+
+    
+    int rows = atoi(argv[3]);
+    int cols = atoi(argv[4]);
+    double dia = atof(argv[5]);
+
+
+    //initializing keys and mat
+    keys = (long long int*)malloc(rows*sizeof(long long int));
+    mat = (double**) malloc( sizeof(double *) * rows );
+
+    for(int x=0; x < rows; x++) {
+        mat[x] = (double *)malloc(sizeof(double)*cols);
+    }
+
+
+
+    //Reading in the keys.txt files
+    FILE *fp = fopen(argv[2], "r");
 
 
 
@@ -233,11 +264,14 @@ int filesInput(){
         printf("File opening failed\n");
         return -1;
     }
+    
 
 //Getting every lli from the file
-    for(int j = 0 ; j < sizeof(keys)/sizeof(long long); j ++){
+    for(int x = 0 ; x < rows; x++){
 
-        fscanf(fp, "%lli",&keys[j]);
+
+        fscanf(fp, "%lli", &keys[x]);
+        
     }
 
 
@@ -248,7 +282,7 @@ int filesInput(){
     int i=0,j=0;
 
 
-    FILE *fstream = fopen("data.txt","r");
+    FILE *fstream = fopen(argv[1],"r");
     if(fstream == NULL)
     {
         printf("\n file opening failed ");
@@ -274,19 +308,16 @@ int filesInput(){
 
     }
 
+    
 
-}
+    
 
-
-int main(){
-    //get files inputted into program
-    filesInput();
 
     //sorting and generating the column by column
-    for(int k = 0; k < COLS-1; k++ ){
+    for(int k = 0; k < cols-1; k++ ){
 
-    vector<ELEMENT> justAColumn(ROWS);
-    for(int x = 0 ; x < ROWS; x++){
+    vector<ELEMENT> justAColumn(rows);
+    for(int x = 0 ; x < rows; x++){
 
         ELEMENT el;
         el.row = x;
@@ -303,7 +334,7 @@ int main(){
 
 
     //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
-    vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
+    vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
     for(int k = 0; k < output.size(); k ++){
