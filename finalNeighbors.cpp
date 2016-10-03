@@ -1,6 +1,6 @@
 
 
-#define EPSILON 0.0000001
+
 
 bool lowHigh (ELEMENT i, ELEMENT j) { 
     return (i.datum<j.datum); 
@@ -35,17 +35,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
             prevLastIndex++;
         }
 
-        
-
-       // printf("Just before insert Start: %i prevLastIndex: %i\n", start, prevLastIndex);
+    
 
 
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
 
-        
-        //cout<< "\nstart: " << start << " prevLast: " << prevLastIndex<< endl;
-        //cout << "v1 should have:\n";
-
+     
         for(int k = start ; k < prevLastIndex; k++){
        
             v1.push_back(s[k]);
@@ -61,12 +56,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //must set to <= because 
         for(int j = prevLastIndex; j <= s.size() ; j++){
           
-            //cout <<"start: " << start << " j: " << j << endl;
          
-
-
-           // printf("j: %i start: %i\n", j, start);
-            //printf("%.12f - %.12f = %.12f | %i\n\n",(1000000.0*s[j].datum), (1000000.0*s[start].datum), (1000000.0*s[j].datum)-(1000000.0*s[start].datum)  , (1000000.0*s[j].datum)  - (1000000.0*s[start].datum) < (1000000.0*DIA) );
 
 
             if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*DIA) ){
@@ -118,10 +108,8 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     //after finding the longest neighborhood, push it in the list 
                     listOfNeigh.push_back(v1);
 
-
                     
                   }
-
 
                        //update prevLastIndex with jth element which indicates which elements have been seen
                 prevLastIndex = j;
@@ -131,9 +119,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
             }
 
 
-
         }
-
                  
     }
 

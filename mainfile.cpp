@@ -240,11 +240,6 @@ int filesInput(){
         fscanf(fp, "%lli",&keys[j]);
     }
 
-//print out the keys
-/*for(int j = 0 ; j < sizeof(keys)/sizeof(long long); j ++){
-  printf("%lli\n",keys[j]);
-}*/
-
 
 //Getting the data.txt
     char buffer[5000] ; //big enough for 500 numbers
@@ -307,23 +302,14 @@ int main(){
 
 
 
-
-
     //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
-
-
-
-
 
 
     for(int k = 0; k < output.size(); k ++){
 
         genBlocks(output[k], (output[k][output[k].size()-1]).datum );
     }
-
-
-
 
 
 
@@ -339,19 +325,10 @@ int main(){
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
 
-  
+        blocksGen += (*it).second.size();
 
         if((*it).second.size() > 1){
             collisionSum++;
-        }
-
-        for(int k =0; k < (*it).second.size(); k++){
-
-              blocksGen++;
-          for(int l = 0 ; l < 4 ; l ++){
-
-            }
-
         }
 
 
