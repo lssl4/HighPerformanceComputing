@@ -9,7 +9,8 @@ That is row 1 would correspond to key 1 in the key array
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <sys/time.h>
+#include <omp.h>
+
 
 
 using namespace std;
@@ -19,17 +20,14 @@ using namespace std;
 #include <vector>
 #include <iostream>
 #include <algorithm>
-//#include <unordered_set>
-
 
 
 #define ROWS 4400
 #define COLS 500
 #define DIA 0.000001
-//#define BLOCKLISTSIZE 400000000000
 
 #include "type.h"
-#include "finalNeighbors.cpp" 
+#include "finalNeighbors.cpp"
 
 
 unordered_map<long long int, vector<BLOCK>> collisionTable;
@@ -45,7 +43,7 @@ vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
     vector<vector<int>> listOfCombos;
 
-   // cout << "n: " << n << " r: " << r << endl;
+    // cout << "n: " << n << " r: " << r << endl;
 
     //generates the eachCom with numbers up to r
     for (int i = 0; i < r; i++){
@@ -69,62 +67,62 @@ vector<vector<int>> genCombos(int n, int r) {
     }
 
     //printing out
-  
+
     for (int i = 0; i < listOfCombos.size(); ++i)
-    {   
+    {
         vector<int> comb = listOfCombos[i];
         for(int j = 0 ; j < comb.size(); j ++){
-            cout << comb[j]<< " ";
+            //cout << comb[j]<< " ";
 
         }
-        cout<< "\n";
+        //cout<< "\n";
     }
 
     return listOfCombos;
 }
 
 /*
-After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable 
+After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable
 */
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
 
-   // cout << "\nc size: "<< c.size() << " vect: "<< vect.size() << endl;
-     //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-        for(int k = 0; k < c.size(); k++){
-            
+    // cout << "\nc size: "<< c.size() << " vect: "<< vect.size() << endl;
+    //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+    for(int k = 0; k < c.size(); k++){
 
 
-            //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
-            //and to get the key value from keys array from the row
-            long long int keysSum =0;
-            BLOCK newBlock;
 
-            for(int j = 0 ;j < numOfElements; j++){
-               // cout << "c[k][j]: " << c[k][j]  << endl;
+        //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
+        //and to get the key value from keys array from the row
+        long long int keysSum =0;
+        BLOCK newBlock;
 
-                ELEMENT el = vect[c[k][j]];
+        for(int j = 0 ;j < numOfElements; j++){
+            // cout << "c[k][j]: " << c[k][j]  << endl;
 
-                newBlock.rowIds.push_back(el.row);
-                newBlock.col = el.col;
+            ELEMENT el = vect[c[k][j]];
 
-               
-                // cout << "el.row: "<<el.row << endl;
-                keysSum += keys[el.row];
+            newBlock.rowIds.push_back(el.row);
+            newBlock.col = el.col;
 
-               
-                 
 
-            }
-           
+            // cout << "el.row: "<<el.row << endl;
+            keysSum += keys[el.row];
 
-            //Assign keysSum to signature of block
-            newBlock.signature = keysSum;
 
-            //add to collision table, if it doesn't exist, it makes a new entry
-            collisionTable[keysSum].push_back(newBlock);
+
 
         }
+
+
+        //Assign keysSum to signature of block
+        newBlock.signature = keysSum;
+
+        //add to collision table, if it doesn't exist, it makes a new entry
+        collisionTable[keysSum].push_back(newBlock);
+
+    }
 }
 
 
@@ -147,107 +145,113 @@ int genBlocks(vector<ELEMENT> v, int pivot){
         //cout << "n ((int)v.size()-1): " << (int)v.size()-1 << "r: " << r<<endl;
         combos1 = genCombos( ((int)v.size())-1, r);
 
-       pushToCollisionTable(combos1, v);
+        pushToCollisionTable(combos1, v);
 
         //else if there's a pivot
     }else{
 
-     
-      if(pivot <(v.size() -1)&& pivot >= 0 ){
-        for(int k = 0 ; k < r; k++){
 
-            int n1 = pivot; 
-            int r1 = r-k-1;
-            int n2 = (int)((v.size()-1)-pivot);
-            int r2 = k+1;
+        if(pivot <(v.size() -1)&& pivot >= 0 ){
+            for(int k = 0 ; k < r; k++){
 
-            if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
-         vector<vector<int>> combinedCombos;
+                int n1 = pivot;
+                int r1 = r-k-1;
+                int n2 = (int)((v.size()-1)-pivot);
+                int r2 = k+1;
 
-         //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
-
-        cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
-
-          //iteratively decreasing r for the first combos
-         combos1 = genCombos(pivot, r-k-1);
+                if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
+                    vector<vector<int>> combinedCombos;
 
 
-        cout <<"aFter combos1. combos1 size: " << combos1.size()<<endl;
-
-       // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
+                    //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
 
 
-        cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
+                    //cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
 
-         //iteratively increasing r for the second combos
-         combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
-
-        cout <<"aFter combos2. combos2 size: " << combos2.size()<<endl;
+                    //iteratively decreasing r for the first combos
+                    combos1 = genCombos(pivot, r-k-1);
 
 
-        //adding all of the combos by pivot in combos2 to match the latter half of array indices
-         for(int x = 0; x < combos2.size() ; x++){
-            vector<int>eachCom = combos2[x];
-            
-            //adding each element in eachCom by pivot
-            for(int y = 0 ; y < eachCom.size(); y++){
 
-                eachCom[y] = eachCom[y] + pivot;
-               
+                    //cout <<"aFter combos1. combos1 size: " << combos1.size()<<endl;
+
+                    // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
+
+
+
+                    //cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
+
+
+                    //iteratively increasing r for the second combos
+                    combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
+
+
+                    //cout <<"aFter combos2. combos2 size: " << combos2.size()<<endl;
+
+
+                    //adding all of the combos by pivot in combos2 to match the latter half of array indices
+                    for(int x = 0; x < combos2.size() ; x++){
+                        vector<int>eachCom = combos2[x];
+
+                        //adding each element in eachCom by pivot
+                        for(int y = 0 ; y < eachCom.size(); y++){
+
+                            eachCom[y] = eachCom[y] + pivot;
+
+                        }
+
+                        combos2[x] = eachCom;
+
+                    }
+
+
+                    //after producing 2 sets of combos, combined them in a permutative manner
+                    for(int l = 0 ; l < combos1.size() ; l++){
+                        vector<int> combA = combos1[l];
+
+
+                        for(int m = 0 ; m  < combos2.size(); m++){
+                            vector<int> aCombinedCombo;//(combos1[l]);
+
+                            vector<int> combB = combos2[m];
+
+
+                            //inserting combos1 first
+                            aCombinedCombo.insert(aCombinedCombo.end(),combA.begin(), combA.end());
+
+                            //inserting combos2 second
+                            aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
+
+
+
+                            //add the combined combo into combinedCombos
+                            combinedCombos.push_back( aCombinedCombo );
+
+
+
+                        }
+
+
+                    }
+
+                    //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
+                    pushToCollisionTable(combinedCombos, v);
+
+                    //printing out combinedCombos
+                    /*for(int n = 0 ; n < combinedCombos.size(); n ++){
+                               vector<int> ve = combinedCombos[n];
+                               for(int o = 0 ; o < ve.size(); o++){
+                                 cout << ve[o] << " " ;
+                             }
+                             cout << "End Line"<< endl;
+                           }*/
+
+
+                }
             }
-            
-            combos2[x] = eachCom;
-
-         }
 
 
-         //after producing 2 sets of combos, combined them in a permutative manner 
-         for(int l = 0 ; l < combos1.size() ; l++){
-            vector<int> combA = combos1[l];
-
-
-            for(int m = 0 ; m  < combos2.size(); m++){
-                vector<int> aCombinedCombo;//(combos1[l]);
-                
-                vector<int> combB = combos2[m];
-
-
-                //inserting combos1 first
-                aCombinedCombo.insert(aCombinedCombo.end(),combA.begin(), combA.end());
-                
-                //inserting combos2 second
-                aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
-
-
-
-                //add the combined combo into combinedCombos
-               combinedCombos.push_back( aCombinedCombo );
-
-                
-
-            }
-             
-
-         }
-
-         //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
-        pushToCollisionTable(combinedCombos, v);        
-
-        //printing out combinedCombos
-         /*for(int n = 0 ; n < combinedCombos.size(); n ++){
-                    vector<int> ve = combinedCombos[n];
-                    for(int o = 0 ; o < ve.size(); o++){
-                      cout << ve[o] << " " ;
-                  }
-                  cout << "End Line"<< endl;
-                }*/
-
-         
-         } 
-     }
-
-      
-    }
+        }
 
 
     }
@@ -283,7 +287,7 @@ int filesInput(){
     char *line;
     int i=0,j=0;
 
-    
+
     FILE *fstream = fopen("data.txt","r");
     if(fstream == NULL)
     {
@@ -315,27 +319,55 @@ int filesInput(){
 
 
 int main(){
-    
-    struct timeval start, end;
-    double delta;
-    
     //get files inputted into program
     filesInput();
-    
-    gettimeofday(&start, NULL);
+
     //sorting and generating the column by column
-    for(int k = 0; k < COLS-1; k++ ){
+    for(int k = 0; k < COLS; k++ ){
 
-    vector<ELEMENT> justAColumn(ROWS);
-    for(int x = 0 ; x < ROWS; x++){
+        vector<ELEMENT> justAColumn(ROWS);
+        for(int x = 0 ; x < ROWS; x++){
 
-        ELEMENT el;
-        el.row = x;
-        el.col = 0;
-        el.datum =  mat[x][k];
+            ELEMENT el;
+            el.row = x;
+            el.col = 0;
+            el.datum =  mat[x][k];
 
 
-        justAColumn[x] = el;
+            justAColumn[x] = el;
+
+
+
+        }
+
+
+
+
+
+        //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
+        vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
+
+
+        //cout << "Output size: "<<output.size() << endl;
+
+        /*for (int k = 0; k < output.size(); ++k)
+        {
+            vector<ELEMENT> n = output[k];
+
+            for(int l = 0 ; l < n.size(); l++ )
+                printf("Size of vector: %i %i %f\n", n.size(),k, n[l].datum );
+        }*/
+
+
+        for(int k = 0; k < output.size(); k ++){
+
+            //  cout << "Size of Output: "<< endl << output.size()<<"(output[k][output[k].size()-2]).datum: " << (output[k][output[k].size()-2]).datum << endl;
+            genBlocks(output[k], (output[k][output[k].size()-1]).datum );
+        }
+
+
+
+
 
 
 
@@ -343,59 +375,37 @@ int main(){
 
 
 
+//printing out collision table
+
+    int collisionSum = 0;
+    int blocksGen = 0;
+    for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
+    {
+        //cout  <<"Key: "<< (*it).first ;
 
 
-    //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
-    vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
 
-     cout << "Output size: "<<output.size() << endl;
-    /*for (int k = 0; k < output.size(); ++k)
-    {   
-        vector<ELEMENT> n = output[k];
+        //cout  <<" Size of Key's value: "<< (*it).second.size() ;
 
-        for(int l = 0 ; l < n.size(); l++ )
-            printf("Size of vector: %i %i %f\n", n.size(),k, n[l].datum );
-    }*/
-       
-
-   for(int k = 0; k < output.size(); k ++){
-
-    //  cout << "Size of Output: "<< endl << output.size()<<"(output[k][output[k].size()-2]).datum: " << (output[k][output[k].size()-2]).datum << endl;
-    genBlocks(output[k], (output[k][output[k].size()-1]).datum );
-   }
-
-
-    //printing out collision table
-   int collisionSum = 0;
-     for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
-      { 
-        cout  <<"Key: "<< (*it).first ;
-
-      
+        if((*it).second.size() > 1){
+            collisionSum++;
+        }
 
         for(int k =0; k < (*it).second.size(); k++){
-              collisionSum++;
-          for(int l = 0 ; l < 4 ; l ++){
-            cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
+
+            blocksGen++;
+            for(int l = 0 ; l < 4 ; l ++){
+                //cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
+
             }
 
         }
 
-        cout << endl;
+        // cout << endl;
 
-      }
-
-     
-    cout<< "collisionSum: "<< collisionSum << endl;
-
-     
+    }
 
 
-}
-gettimeofday(&end, NULL);
+    cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
 
-    delta = ((end.tv_sec  - start.tv_sec) * 1000000u +
-             end.tv_usec - start.tv_usec) / 1.e6;
-    printf("\n");
-    printf("time=%12.10f\n",delta);
 }
