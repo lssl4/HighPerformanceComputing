@@ -317,7 +317,7 @@ int main(){
     filesInput();
 
     //sorting and generating the column by column
-    //for(int k = 0; k < COLS-1; k++ ){
+    for(int k = 0; k < COLS-1; k++ ){
 
     vector<ELEMENT> justAColumn(ROWS);
     for(int x = 0 ; x < ROWS; x++){
@@ -325,7 +325,7 @@ int main(){
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][0];
+        el.datum =  mat[x][k];
 
 
         justAColumn[x] = el;
@@ -358,13 +358,22 @@ int main(){
    }
 
 
-    //printing out collision table
+    
+
+     
+
+
+}
+
+
+
+//printing out collision table
    int collisionSum = 0;
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
         cout  <<"Key: "<< (*it).first ;
 
-      
+        cout  <<" Size of Key's value: "<< (*it).second.size() ;
 
         for(int k =0; k < (*it).second.size(); k++){
               collisionSum++;
@@ -380,9 +389,4 @@ int main(){
 
      
     cout<< "collisionSum: "<< collisionSum << endl;
-
-     
-
-
-//}
 }

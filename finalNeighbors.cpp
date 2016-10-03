@@ -43,16 +43,16 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
 
         
-        cout<< "\nstart: " << start << " prevLast: " << prevLastIndex<< endl;
-        cout << "v1 should have:\n";
+        //cout<< "\nstart: " << start << " prevLast: " << prevLastIndex<< endl;
+        //cout << "v1 should have:\n";
 
         for(int k = start ; k < prevLastIndex; k++){
-            cout<< "K: " << k << " prevLast: " << prevLastIndex<< endl;
+           // cout<< "K: " << k << " prevLast: " << prevLastIndex<< endl;
 
             //cout<< "K: " << k << "prevLast: " << prevLastIndex<< endl;
             v1.push_back(s[k]);
 
-            cout << s[k].datum << endl;
+            //cout << s[k].datum << endl;
         }
       
 
@@ -70,7 +70,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //must set to <= because 
         for(int j = prevLastIndex; j <= s.size() ; j++){
           
-            cout <<"start: " << start << " j: " << j << endl;
+            //cout <<"start: " << start << " j: " << j << endl;
          
 
 
@@ -84,7 +84,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                 v1.push_back(s[j]);
               
 
-                cout << "Pushed in v1: " << s[j].datum <<endl;
+                //cout << "Pushed in v1: " << s[j].datum <<endl;
                 
             }
 
@@ -93,12 +93,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
                 //if no new elements are added and j is still at prev index then break 
                 if(j == prevLastIndex){
-                    cout << "I skipped this list" <<endl;
+                    //cout << "I skipped this list" <<endl;
                     break;
                 }
 
 
-                cout << "Accept this list" << endl;
+                //cout << "Accept this list" << endl;
                  //if there's no more elements to be added, append pivot to the vector
                 if(listOfNeigh.size() >0){
 
