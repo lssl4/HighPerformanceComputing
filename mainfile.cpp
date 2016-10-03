@@ -72,10 +72,10 @@ vector<vector<int>> genCombos(int n, int r) {
     {   
         vector<int> comb = listOfCombos[i];
         for(int j = 0 ; j < comb.size(); j ++){
-            cout << comb[j]<< " ";
+            //cout << comb[j]<< " ";
 
         }
-        cout<< "\n";
+        //cout<< "\n";
     }
 
     return listOfCombos;
@@ -164,23 +164,23 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
          //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
 
-        cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
+       // cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
 
           //iteratively decreasing r for the first combos
          combos1 = genCombos(pivot, r-k-1);
 
 
-        cout <<"aFter combos1. combos1 size: " << combos1.size()<<endl;
+        //cout <<"aFter combos1. combos1 size: " << combos1.size()<<endl;
 
        // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
 
 
-        cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
+        //cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
 
          //iteratively increasing r for the second combos
          combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
 
-        cout <<"aFter combos2. combos2 size: " << combos2.size()<<endl;
+       // cout <<"aFter combos2. combos2 size: " << combos2.size()<<endl;
 
 
         //adding all of the combos by pivot in combos2 to match the latter half of array indices
@@ -317,7 +317,7 @@ int main(){
     filesInput();
 
     //sorting and generating the column by column
-    //for(int k = 0; k < COLS-1; k++ ){
+    for(int k = 0; k < COLS; k++ ){
 
     vector<ELEMENT> justAColumn(ROWS);
     for(int x = 0 ; x < ROWS; x++){
@@ -325,7 +325,7 @@ int main(){
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][0];
+        el.datum =  mat[x][k];
 
 
         justAColumn[x] = el;
@@ -341,7 +341,7 @@ int main(){
     //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
 
-     cout << "Output size: "<<output.size() << endl;
+     //cout << "Output size: "<<output.size() << endl;
     /*for (int k = 0; k < output.size(); ++k)
     {   
         vector<ELEMENT> n = output[k];
@@ -363,7 +363,7 @@ int main(){
      
 
 
-//}
+}
 
 
 
@@ -372,9 +372,9 @@ int main(){
    int blocksGen = 0;
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
-        cout  <<"Key: "<< (*it).first ;
+        //cout  <<"Key: "<< (*it).first ;
 
-        cout  <<" Size of Key's value: "<< (*it).second.size() ;
+        //cout  <<" Size of Key's value: "<< (*it).second.size() ;
 
         if((*it).second.size() > 1){
             collisionSum++;
@@ -383,12 +383,12 @@ int main(){
         for(int k =0; k < (*it).second.size(); k++){
               blocksGen++;
           for(int l = 0 ; l < 4 ; l ++){
-            cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
+            //cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
             }
 
         }
 
-        cout << endl;
+       // cout << endl;
 
       }
 
