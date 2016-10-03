@@ -47,21 +47,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
         //cout << "v1 should have:\n";
 
         for(int k = start ; k < prevLastIndex; k++){
-           // cout<< "K: " << k << " prevLast: " << prevLastIndex<< endl;
-
-            //cout<< "K: " << k << "prevLast: " << prevLastIndex<< endl;
+       
             v1.push_back(s[k]);
 
-            //cout << s[k].datum << endl;
         }
       
 
-
-       // cout << "v1 after start: " <<start << endl;
-        /*for (int i = 0; i < v1.size(); ++i)
-        {
-            printf("%.7f ", v1[i].datum);
-        }*/
 
        
 
@@ -84,7 +75,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                 v1.push_back(s[j]);
               
 
-                //cout << "Pushed in v1: " << s[j].datum <<endl;
                 
             }
 
@@ -93,12 +83,10 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
                 //if no new elements are added and j is still at prev index then break 
                 if(j == prevLastIndex){
-                    //cout << "I skipped this list" <<endl;
                     break;
                 }
 
 
-                //cout << "Accept this list" << endl;
                  //if there's no more elements to be added, append pivot to the vector
                 if(listOfNeigh.size() >0){
 
@@ -110,7 +98,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
 
                     if(prevVectRow - currVectRow >=0 ){
                         pivot = prevVectRow - currVectRow +1;
-                       // printf("pivot: %i\n", pivot);
                     }else{
                         //if rows don't overlap then just put the vector size as the pivot
                          pivot = v1.size();
@@ -132,20 +119,12 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s){
                     listOfNeigh.push_back(v1);
 
 
-                   // printf("Just pushed into listOfNeigh\n");
-
-                    for (int x = 0; x < v1.size(); ++x)
-                    {
-                        /* code */
-                        //printf("%.7f \n", v1[x].datum);
-                    }
                     
                   }
 
 
                        //update prevLastIndex with jth element which indicates which elements have been seen
                 prevLastIndex = j;
-                //cout << "prevLastIndex: " << prevLastIndex <<endl;
                 
                 
                 break;
