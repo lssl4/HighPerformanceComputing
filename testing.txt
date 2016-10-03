@@ -8935,4 +8935,4 @@ Key: 219353414319948 Size of Key's value: 1 Value (row): 2487  Value (row): 2295
 Key: 133052091672872 Size of Key's value: 1 Value (row): 313  Value (row): 3199  Value (row): 610  Value (row): 1360 
 Key: 159278879026296 Size of Key's value: 1 Value (row): 1809  Value (row): 2295  Value (row): 3064  Value (row): 3529 
 Key: 231966989963644 Size of Key's value: 1 Value (row): 1979  Value (row): 4066  Value (row): 3926  Value (row): 3254 
-collisionSum: 4286
+collisionSum: 130 BlocksGen: 4286
