@@ -29,7 +29,7 @@ long long int *keys;
 double **mat;
 
 
-#include "finalNeighbors.cpp"
+#include "finalNeighborsOMP.cpp"
 
 
 
@@ -72,12 +72,14 @@ After the 4 element combos have been generated and modified, generate the blocks
 */
 void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
     int numOfElements =4;
+    //long long int keysSum =0;
+    omp_lock_t writelock;
+    omp_init_lock(&writelock);
+#pragma omp parallel num_threads(2)
 
-    
-
-    #pragma omp parallel
     {
         //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+
         #pragma omp for
         for(int k = 0; k < listOfCom.size(); k++){
 
@@ -88,7 +90,7 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
             long long int keysSum =0;
             BLOCK newBlock;
 
-            
+
             for(int j = 0 ;j < numOfElements; j++){
 
                 //gets the element in the vector vect based on the combination index of listOfCom
@@ -97,8 +99,8 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
                 newBlock.rowIds.push_back(el.row);
                 newBlock.col = el.col;
 
-
                keysSum += keys[el.row];
+
 
 
 
@@ -110,10 +112,12 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
            // newBlock.signature = keysSum;
 
             //add to collision table, if it doesn't exist, it makes a new entry
-            collisionTable[keysSum].push_back(newBlock);
+            omp_set_lock(&writelock);
+                collisionTable[keysSum].push_back(newBlock);
+            omp_unset_lock(&writelock);
 
         }
-    }
+   }omp_destroy_lock(&writelock);
 }
 
 
