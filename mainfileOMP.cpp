@@ -22,17 +22,14 @@ using namespace std;
 #include <algorithm>
 
 
-#define ROWS 4400
-#define COLS 500
-#define DIA 0.000001
 
 #include "type.h"
-#include "finalNeighbors.cpp"
-
-
 unordered_map<long long int, vector<BLOCK>> collisionTable;
-long long keys[ROWS];
-static double mat[ROWS][COLS];
+long long int *keys;
+double **mat;
+
+
+#include "finalNeighbors.cpp"
 
 
 
@@ -43,7 +40,6 @@ vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
     vector<vector<int>> listOfCombos;
 
-    // cout << "n: " << n << " r: " << r << endl;
 
     //generates the eachCom with numbers up to r
     for (int i = 0; i < r; i++){
@@ -66,17 +62,7 @@ vector<vector<int>> genCombos(int n, int r) {
         }
     }
 
-    //printing out
-
-    for (int i = 0; i < listOfCombos.size(); ++i)
-    {
-        vector<int> comb = listOfCombos[i];
-        for(int j = 0 ; j < comb.size(); j ++){
-            //cout << comb[j]<< " ";
-
-        }
-        //cout<< "\n";
-    }
+    
 
     return listOfCombos;
 }
@@ -84,12 +70,11 @@ vector<vector<int>> genCombos(int n, int r) {
 /*
 After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable
 */
-void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
+void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
     int numOfElements =4;
 
-    // cout << "\nc size: "<< c.size() << " vect: "<< vect.size() << endl;
     //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-    for(int k = 0; k < c.size(); k++){
+    for(int k = 0; k < listOfCom.size(); k++){
 
 
 
@@ -98,16 +83,16 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
         long long int keysSum =0;
         BLOCK newBlock;
 
+        
         for(int j = 0 ;j < numOfElements; j++){
-            // cout << "c[k][j]: " << c[k][j]  << endl;
 
-            ELEMENT el = vect[c[k][j]];
+            //gets the element in the vector vect based on the combination index of listOfCom
+            ELEMENT el = vect[listOfCom[k][j]];
 
             newBlock.rowIds.push_back(el.row);
             newBlock.col = el.col;
 
 
-            // cout << "el.row: "<<el.row << endl;
             keysSum += keys[el.row];
 
 
@@ -130,7 +115,7 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 /*
 Generate blocks given a vector of ELEMENTS and pivot. v.size() -1 because it also contains the pivot at the end
 */
-int genBlocks(vector<ELEMENT> v, int pivot){
+int genBlocks(vector<ELEMENT> v, int pivot ){
 
     //2 combos vectors for block generations and to prevent redundant blocks
     vector<vector<int>> combos1;
@@ -142,7 +127,6 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
     if(pivot==v.size()-1){
 
-        //cout << "n ((int)v.size()-1): " << (int)v.size()-1 << "r: " << r<<endl;
         combos1 = genCombos( ((int)v.size())-1, r);
 
         pushToCollisionTable(combos1, v);
@@ -163,30 +147,19 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                     vector<vector<int>> combinedCombos;
 
 
-                    //cout <<"pivot: "<< pivot<<" for combos1: r-k-1: "<< r-k-1 << endl;
-
-
-                    //cout<< "n1: "<< n1 << "r1: "<< r1 << endl;
+                
 
                     //iteratively decreasing r for the first combos
                     combos1 = genCombos(pivot, r-k-1);
 
 
 
-                    //cout <<"aFter combos1. combos1 size: " << combos1.size()<<endl;
-
-                    // cout <<"(v.size()-pivot): "<< (int)(v.size()-pivot) <<" for combos2: k+1: "<< k+1 << endl;
-
-
-
-                    //cout<< "n2: "<< n2 << "r2: "<< r2 << endl;
 
 
                     //iteratively increasing r for the second combos
                     combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
 
 
-                    //cout <<"aFter combos2. combos2 size: " << combos2.size()<<endl;
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
@@ -211,7 +184,7 @@ int genBlocks(vector<ELEMENT> v, int pivot){
 
 
                         for(int m = 0 ; m  < combos2.size(); m++){
-                            vector<int> aCombinedCombo;//(combos1[l]);
+                            vector<int> aCombinedCombo;
 
                             vector<int> combB = combos2[m];
 
@@ -237,15 +210,6 @@ int genBlocks(vector<ELEMENT> v, int pivot){
                     //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
                     pushToCollisionTable(combinedCombos, v);
 
-                    //printing out combinedCombos
-                    /*for(int n = 0 ; n < combinedCombos.size(); n ++){
-                               vector<int> ve = combinedCombos[n];
-                               for(int o = 0 ; o < ve.size(); o++){
-                                 cout << ve[o] << " " ;
-                             }
-                             cout << "End Line"<< endl;
-                           }*/
-
 
                 }
             }
@@ -258,9 +222,37 @@ int genBlocks(vector<ELEMENT> v, int pivot){
     return blocksGen;
 }
 
-int filesInput(){
-    //Reading in the files
-    FILE *fp = fopen("keys.txt", "r");
+
+
+
+int main(int argc, char* argv[]){
+
+
+    if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
+
+        printf("Please give the correct arguments: progName datafilename keysfilename rows columns dia\n");
+
+        return -1;
+    }
+
+    
+    int rows = atoi(argv[3]);
+    int cols = atoi(argv[4]);
+    double dia = atof(argv[5]);
+
+
+    //initializing keys and mat
+    keys = (long long int*)malloc(rows*sizeof(long long int));
+    mat = (double**) malloc( sizeof(double *) * rows );
+
+    for(int x=0; x < rows; x++) {
+        mat[x] = (double *)malloc(sizeof(double)*cols);
+    }
+
+
+
+    //Reading in the keys.txt files
+    FILE *fp = fopen(argv[2], "r");
 
 
 
@@ -268,17 +260,15 @@ int filesInput(){
         printf("File opening failed\n");
         return -1;
     }
+    
 
 //Getting every lli from the file
-    for(int j = 0 ; j < sizeof(keys)/sizeof(long long); j ++){
+    for(int x = 0 ; x < rows; x++){
 
-        fscanf(fp, "%lli",&keys[j]);
+
+        fscanf(fp, "%lli", &keys[x]);
+        
     }
-
-//print out the keys
-/*for(int j = 0 ; j < sizeof(keys)/sizeof(long long); j ++){
-  printf("%lli\n",keys[j]);
-}*/
 
 
 //Getting the data.txt
@@ -288,7 +278,7 @@ int filesInput(){
     int i=0,j=0;
 
 
-    FILE *fstream = fopen("data.txt","r");
+    FILE *fstream = fopen(argv[1],"r");
     if(fstream == NULL)
     {
         printf("\n file opening failed ");
@@ -314,60 +304,24 @@ int filesInput(){
 
     }
 
+    
 
-}
+    
 
-
-int main(){
-    //get files inputted into program
-    filesInput();
 
     //sorting and generating the column by column
-    for(int k = 0; k < COLS; k++ ){
+    for(int k = 0; k < cols-1; k++ ){
 
-        vector<ELEMENT> justAColumn(ROWS);
-        for(int x = 0 ; x < ROWS; x++){
+    vector<ELEMENT> justAColumn(rows);
+    for(int x = 0 ; x < rows; x++){
 
-            ELEMENT el;
-            el.row = x;
-            el.col = 0;
-            el.datum =  mat[x][k];
-
-
-            justAColumn[x] = el;
+        ELEMENT el;
+        el.row = x;
+        el.col = 0;
+        el.datum =  mat[x][k];
 
 
-
-        }
-
-
-
-
-
-        //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
-        vector<vector<ELEMENT>> output = getNeighbours(justAColumn);
-
-
-        //cout << "Output size: "<<output.size() << endl;
-
-        /*for (int k = 0; k < output.size(); ++k)
-        {
-            vector<ELEMENT> n = output[k];
-
-            for(int l = 0 ; l < n.size(); l++ )
-                printf("Size of vector: %i %i %f\n", n.size(),k, n[l].datum );
-        }*/
-
-
-        for(int k = 0; k < output.size(); k ++){
-
-            //  cout << "Size of Output: "<< endl << output.size()<<"(output[k][output[k].size()-2]).datum: " << (output[k][output[k].size()-2]).datum << endl;
-            genBlocks(output[k], (output[k][output[k].size()-1]).datum );
-        }
-
-
-
-
+        justAColumn[x] = el;
 
 
 
@@ -375,33 +329,36 @@ int main(){
 
 
 
+    //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
+    vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+
+
+    for(int k = 0; k < output.size(); k ++){
+
+        genBlocks(output[k], (output[k][output[k].size()-1]).datum );
+    }
+
+
+
+
+}
+
+
+
 //printing out collision table
 
-    int collisionSum = 0;
-    int blocksGen = 0;
-    for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
-    {
-        //cout  <<"Key: "<< (*it).first ;
+   int collisionSum = 0;
+   int blocksGen = 0;
+     for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
+      { 
 
-
-
-        //cout  <<" Size of Key's value: "<< (*it).second.size() ;
+        //for each key add their value size
+        blocksGen += (*it).second.size();
 
         if((*it).second.size() > 1){
             collisionSum++;
         }
 
-        for(int k =0; k < (*it).second.size(); k++){
-
-            blocksGen++;
-            for(int l = 0 ; l < 4 ; l ++){
-                //cout<< " Value (row): "<< (*it).second[k].rowIds[l] << " ";
-
-            }
-
-        }
-
-        // cout << endl;
 
     }
 
