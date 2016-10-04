@@ -301,7 +301,8 @@ int main(int argc, char* argv[]){
         ++i ;
 
     }
-
+    fclose(fp);
+    fclose(fstream);
 
 
 
