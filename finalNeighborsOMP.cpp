@@ -41,7 +41,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
         int k;
-        #omp_set_num_threads(4);
+        
         #pragma omg parallel for
         for(k = start ; k < prevLastIndex; k++){
        

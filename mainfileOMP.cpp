@@ -73,40 +73,46 @@ After the 4 element combos have been generated and modified, generate the blocks
 void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
     int numOfElements =4;
 
-    //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-    for(int k = 0; k < listOfCom.size(); k++){
+    
+
+    #pragma omp parallel
+    {
+        //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+        #pragma omp for
+        for(int k = 0; k < listOfCom.size(); k++){
 
 
 
-        //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
-        //and to get the key value from keys array from the row
-        long long int keysSum =0;
-        BLOCK newBlock;
+            //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
+            //and to get the key value from keys array from the row
+            long long int keysSum =0;
+            BLOCK newBlock;
 
-        
-        for(int j = 0 ;j < numOfElements; j++){
+            
+            for(int j = 0 ;j < numOfElements; j++){
 
-            //gets the element in the vector vect based on the combination index of listOfCom
-            ELEMENT el = vect[listOfCom[k][j]];
+                //gets the element in the vector vect based on the combination index of listOfCom
+                ELEMENT el = vect[listOfCom[k][j]];
 
-            newBlock.rowIds.push_back(el.row);
-            newBlock.col = el.col;
-
-
-            keysSum += keys[el.row];
+                newBlock.rowIds.push_back(el.row);
+                newBlock.col = el.col;
 
 
+               keysSum += keys[el.row];
 
+
+
+
+            }
+
+
+            //Assign keysSum to signature of block
+           // newBlock.signature = keysSum;
+
+            //add to collision table, if it doesn't exist, it makes a new entry
+            collisionTable[keysSum].push_back(newBlock);
 
         }
-
-
-        //Assign keysSum to signature of block
-        newBlock.signature = keysSum;
-
-        //add to collision table, if it doesn't exist, it makes a new entry
-        collisionTable[keysSum].push_back(newBlock);
-
     }
 }
 

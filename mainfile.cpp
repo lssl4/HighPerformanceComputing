@@ -106,7 +106,7 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
 
         //Assign keysSum to signature of block
-        newBlock.signature = keysSum;
+        //newBlock.signature = keysSum;
 
         //add to collision table, if it doesn't exist, it makes a new entry
         collisionTable[keysSum].push_back(newBlock);
