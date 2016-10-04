@@ -356,6 +356,7 @@ int main(int argc, char* argv[]){
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
 
+        //for each key add their value size
         blocksGen += (*it).second.size();
 
         if((*it).second.size() > 1){
