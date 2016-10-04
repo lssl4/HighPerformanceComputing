@@ -45,7 +45,7 @@ vector<vector<int>> genCombos(int n, int r) {
 
     for (int i = 0; i < r; i++){
 
-            eachCom.push_back(i);
+        eachCom.push_back(i);
 
     }
 
@@ -63,7 +63,7 @@ vector<vector<int>> genCombos(int n, int r) {
         }
     }
 
-    
+
 
     return listOfCombos;
 }
@@ -76,11 +76,11 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
     //long long int keysSum =0;
     omp_lock_t writelock;
     omp_init_lock(&writelock);
-    #pragma omp parallel num_threads(4)
-     {
+#pragma omp parallel num_threads(4)
+    {
         //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
 
-        #pragma omp for
+#pragma omp for
         for (int k = 0; k < listOfCom.size(); k++) {
 
 
@@ -104,16 +104,10 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
 
             }
 
-
-            //Assign keysSum to signature of block
-             //newBlock.signature = keysSum;
-
             //add to collision table, if it doesn't exist, it makes a new entry
             omp_set_lock(&writelock);
-
-
-                collisionTable[keysSum].push_back(newBlock);
-                omp_unset_lock(&writelock);
+            collisionTable[keysSum].push_back(newBlock);
+            omp_unset_lock(&writelock);
 
 
         }
@@ -156,14 +150,8 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
                 if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
                     vector<vector<int>> combinedCombos;
 
-
-                
-
                     //iteratively decreasing r for the first combos
                     combos1 = genCombos(pivot, r-k-1);
-
-
-
 
 
                     //iteratively increasing r for the second combos
@@ -173,15 +161,15 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
-#pragma omp parallel for num_threads(4)
+#pragma omp parallel for schedule(static)
                     for(int x = 0; x < combos2.size() ; x++){
                         vector<int>eachCom = combos2[x];
 
                         //adding each element in eachCom by pivot
-//#pragma omp parallel for
+#pragma omp parallel for schedule(static)
                         for(int y = 0 ; y < eachCom.size(); y++){
 
-                            eachCom[y] = eachCom[y] + pivot;
+                            eachCom[y]+= pivot;
 
                         }
 
@@ -195,19 +183,16 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
                     for(int l = 0 ; l < combos1.size() ; l++){
                         vector<int> combA = combos1[l];
 
-
                         for(int m = 0 ; m  < combos2.size(); m++){
                             vector<int> aCombinedCombo;
 
                             vector<int> combB = combos2[m];
-
 
                             //inserting combos1 first
                             aCombinedCombo.insert(aCombinedCombo.end(),combA.begin(), combA.end());
 
                             //inserting combos2 second
                             aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
-
 
 
                             //add the combined combo into combinedCombos
@@ -248,7 +233,7 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    
+
     int rows = atoi(argv[3]);
     int cols = atoi(argv[4]);
     double dia = atof(argv[5]);
@@ -274,14 +259,13 @@ int main(int argc, char* argv[]){
         printf("File opening failed\n");
         return -1;
     }
-    
+
 
 //Getting every lli from the file
+
     for(int x = 0 ; x < rows; x++){
 
-
         fscanf(fp, "%lli", &keys[x]);
-        
     }
 
 
@@ -318,55 +302,55 @@ int main(int argc, char* argv[]){
 
     }
 
-    
 
-    
+
+
 
 
     //sorting and generating the column by column
 #pragma omp num_threads(4) for schedule(static)
     for(int k = 0; k < cols; k++ ){
 
-    vector<ELEMENT> justAColumn(rows);
+        vector<ELEMENT> justAColumn(rows);
 
         for(int x = 0 ; x < rows; x++){
 
-        ELEMENT el;
-        el.row = x;
-        el.col = 0;
-        el.datum =  mat[x][k];
+            ELEMENT el;
+            el.row = x;
+            el.col = 0;
+            el.datum =  mat[x][k];
 
 
-        justAColumn[x] = el;
+            justAColumn[x] = el;
+
+
+
+        }
+
+
+
+        //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
+        vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+
+
+        for(int k = 0; k < output.size(); k ++){
+
+            genBlocks(output[k], (output[k][output[k].size()-1]).datum );
+        }
+
 
 
 
     }
-
-
-
-    //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
-    vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
-
-
-    for(int k = 0; k < output.size(); k ++){
-
-        genBlocks(output[k], (output[k][output[k].size()-1]).datum );
-    }
-
-
-
-
-}
 
 
 
 //printing out collision table
 
-   int collisionSum = 0;
-   int blocksGen = 0;
-     for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
-      { 
+    int collisionSum = 0;
+    int blocksGen = 0;
+    for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
+    {
 
         //for each key add their value size
         blocksGen += (*it).second.size();
@@ -380,5 +364,6 @@ int main(int argc, char* argv[]){
 
 
     cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
-
+    free(keys);
+    free(mat);
 }
