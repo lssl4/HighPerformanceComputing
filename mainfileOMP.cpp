@@ -42,9 +42,10 @@ vector<vector<int>> genCombos(int n, int r) {
 
 
     //generates the eachCom with numbers up to r
+
     for (int i = 0; i < r; i++){
 
-        eachCom.push_back(i);
+            eachCom.push_back(i);
 
     }
 
@@ -109,8 +110,11 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
 
             //add to collision table, if it doesn't exist, it makes a new entry
             omp_set_lock(&writelock);
-            collisionTable[keysSum].push_back(newBlock);
-            omp_unset_lock(&writelock);
+
+
+                collisionTable[keysSum].push_back(newBlock);
+                omp_unset_lock(&writelock);
+
 
         }
     }omp_destroy_lock(&writelock);
@@ -169,10 +173,12 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
+#pragma omp parallel for num_threads(4)
                     for(int x = 0; x < combos2.size() ; x++){
                         vector<int>eachCom = combos2[x];
 
                         //adding each element in eachCom by pivot
+//#pragma omp parallel for
                         for(int y = 0 ; y < eachCom.size(); y++){
 
                             eachCom[y] = eachCom[y] + pivot;
@@ -185,6 +191,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //after producing 2 sets of combos, combined them in a permutative manner
+#pragma omp for schedule(static)
                     for(int l = 0 ; l < combos1.size() ; l++){
                         vector<int> combA = combos1[l];
 
@@ -251,6 +258,7 @@ int main(int argc, char* argv[]){
     keys = (long long int*)malloc(rows*sizeof(long long int));
     mat = (double**) malloc( sizeof(double *) * rows );
 
+//#pragma omp parallel for num_threads(4) schedule(dynamic,2000)
     for(int x=0; x < rows; x++) {
         mat[x] = (double *)malloc(sizeof(double)*cols);
     }
@@ -319,7 +327,8 @@ int main(int argc, char* argv[]){
     for(int k = 0; k < cols; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
-    for(int x = 0 ; x < rows; x++){
+#pragma omp num_threads(4) for schedule(static)
+        for(int x = 0 ; x < rows; x++){
 
         ELEMENT el;
         el.row = x;
