@@ -29,7 +29,7 @@ long long int *keys;
 double **mat;
 
 
-#include "finalNeighbors.cpp"
+#include "finalNeighborsOMP.cpp"
 
 
 
@@ -75,10 +75,10 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
 
     
 
-    #pragma omp parallel
+   #pragma omp parallel
     {
         //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-        #pragma omp for
+       #pragma omp for
         for(int k = 0; k < listOfCom.size(); k++){
 
 
