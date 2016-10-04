@@ -268,7 +268,8 @@ int main(int argc, char* argv[]){
         fscanf(fp, "%lli", &keys[x]);
     }
 
-
+    fclose(fp);
+    
 //Getting the data.txt
     char buffer[5000] ; //big enough for 500 numbers
     char *record;
@@ -301,9 +302,9 @@ int main(int argc, char* argv[]){
         ++i ;
 
     }
-    fclose(fp);
-    fclose(fstream);
 
+    //closing data file
+    fclose(fstream);
 
 
 
