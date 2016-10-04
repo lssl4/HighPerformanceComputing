@@ -324,10 +324,11 @@ int main(int argc, char* argv[]){
 
 
     //sorting and generating the column by column
+#pragma omp num_threads(4) for schedule(static)
     for(int k = 0; k < cols; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
-#pragma omp num_threads(4) for schedule(static)
+
         for(int x = 0 ; x < rows; x++){
 
         ELEMENT el;
