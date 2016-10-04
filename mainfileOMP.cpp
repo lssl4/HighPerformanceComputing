@@ -75,23 +75,22 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
     //long long int keysSum =0;
     omp_lock_t writelock;
     omp_init_lock(&writelock);
-#pragma omp parallel num_threads(2)
-
-    {
+    #pragma omp parallel num_threads(4)
+     {
         //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
 
         #pragma omp for
-        for(int k = 0; k < listOfCom.size(); k++){
+        for (int k = 0; k < listOfCom.size(); k++) {
 
 
 
             //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
             //and to get the key value from keys array from the row
-            long long int keysSum =0;
+            long long int keysSum = 0;
             BLOCK newBlock;
 
 
-            for(int j = 0 ;j < numOfElements; j++){
+            for (int j = 0; j < numOfElements; j++) {
 
                 //gets the element in the vector vect based on the combination index of listOfCom
                 ELEMENT el = vect[listOfCom[k][j]];
@@ -99,25 +98,22 @@ void pushToCollisionTable(vector<vector<int>> listOfCom, vector<ELEMENT> vect){
                 newBlock.rowIds.push_back(el.row);
                 newBlock.col = el.col;
 
-               keysSum += keys[el.row];
-
-
-
+                keysSum += keys[el.row];
 
 
             }
 
 
             //Assign keysSum to signature of block
-           // newBlock.signature = keysSum;
+             //newBlock.signature = keysSum;
 
             //add to collision table, if it doesn't exist, it makes a new entry
             omp_set_lock(&writelock);
-                collisionTable[keysSum].push_back(newBlock);
+            collisionTable[keysSum].push_back(newBlock);
             omp_unset_lock(&writelock);
 
         }
-   }omp_destroy_lock(&writelock);
+    }omp_destroy_lock(&writelock);
 }
 
 
@@ -320,7 +316,7 @@ int main(int argc, char* argv[]){
 
 
     //sorting and generating the column by column
-    for(int k = 0; k < cols-1; k++ ){
+    for(int k = 0; k < cols; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
     for(int x = 0 ; x < rows; x++){
