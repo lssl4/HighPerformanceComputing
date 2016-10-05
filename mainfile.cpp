@@ -68,7 +68,21 @@ vector<vector<int>> genCombos(int n, int r) {
         }
     }
 
-    
+    /*printf("Printing list of combos\n");
+    for (int x = 0; x < listOfCombos.size(); ++x)
+    {
+        
+        std::vector<int> vexam = listOfCombos[x];
+        for (int y = 0; y < vexam.size(); ++y)
+        {
+            
+            cout << vexam[y] << " ";
+
+        }
+        cout << "Size of combos: " <<listOfCombos.size();
+        cout << endl;
+
+    }*/
 
     return listOfCombos;
 }
@@ -314,20 +328,21 @@ int main(int argc, char* argv[]){
 
 
     //sorting and generating the column by column
-    for(int k = 0; k < cols-1; k++ ){
+    //for(int k = 0; k < cols-1; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
+    
     for(int x = 0 ; x < rows; x++){
 
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][k];
+        el.datum =  mat[x][499];
 
 
         justAColumn[x] = el;
 
-
+        
 
     }
 
@@ -336,16 +351,17 @@ int main(int argc, char* argv[]){
     //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
-
+    //printf("Printing genBlocks paramters\n");
     for(int k = 0; k < output.size(); k ++){
 
+        
         genBlocks(output[k], (output[k][output[k].size()-1]).datum );
     }
 
 
 
 
-}
+//}
 
 
 
