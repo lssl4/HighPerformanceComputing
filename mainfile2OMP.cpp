@@ -42,12 +42,9 @@ Generate combinations of indices.
 vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
     vector<vector<int>> listOfCombos;
-
-
     //generates the eachCom with numbers up to r
-//#pragma omp parallel for num_threads(4)
     for (int i = 0; i < r; i++){
-   //#pragma omp critical(a)
+
         eachCom.push_back(i);
 
     }
@@ -66,21 +63,7 @@ vector<vector<int>> genCombos(int n, int r) {
         }
     }
 
-    /*printf("Printing list of combos\n");
-    for (int x = 0; x < listOfCombos.size(); ++x)
-    {
-        
-        std::vector<int> vexam = listOfCombos[x];
-        for (int y = 0; y < vexam.size(); ++y)
-        {
-            
-            cout << vexam[y] << " ";
 
-        }
-        cout << "Size of combos: " <<listOfCombos.size();
-        cout << endl;
-
-    }*/
 
     return listOfCombos;
 }
@@ -94,10 +77,8 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     omp_init_lock(&writelock);
     //
     // for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-   #pragma omp parallel num_threads(4)
-    {
 
-#pragma omp for
+#pragma omp parallel for num_threads(4)
     for(int k = 0; k < c.size(); k++) {
 
         //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
@@ -118,16 +99,12 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
         }
 
-
-        //Assign keysSum to signature of block
-        //newBlock.signature = keysSum;
-
         //add to collision table, if it doesn't exist, it makes a new entry
         omp_set_lock(&writelock);
-//#pragma omp critical(b)
+
         collisionTable[keysSum].push_back(newBlock);
+
         omp_unset_lock(&writelock);
-    }
     }omp_destroy_lock(&writelock);
 }
 
