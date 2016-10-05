@@ -11,8 +11,6 @@ That is row 1 would correspond to key 1 in the key array
 #include <math.h>
 #include <omp.h>
 
-
-
 using namespace std;
 
 //c++ directives
@@ -73,9 +71,9 @@ After the 4 element combos have been generated and modified, generate the blocks
 */
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
-   omp_lock_t writelock;
+    omp_lock_t writelock;
     omp_init_lock(&writelock);
-    //
+
     // for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
 
 #pragma omp parallel for num_threads(4)
@@ -100,7 +98,8 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
         }
 
         //add to collision table, if it doesn't exist, it makes a new entry
-        omp_set_lock(&writelock);
+
+        omp_set_lock(&writelock);//prevents other threads writing to the same location
 
         collisionTable[keysSum].push_back(newBlock);
 
@@ -155,12 +154,12 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
-                    #pragma omp parallel for schedule(static)
+                    #pragma omp parallel for num_threads(4) schedule(static)
                     for(int x = 0; x < combos2.size() ; x++){
                         vector<int>eachCom = combos2[x];
 
                         //adding each element in eachCom by pivot
-                       #pragma omp parallel for schedule(static)
+
                         for(int y = 0 ; y < eachCom.size(); y++){
 
                             eachCom[y] += pivot;
@@ -173,7 +172,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //after producing 2 sets of combos, combined them in a permutative manner
-                    #pragma omp parallel for schedule(static)
+                    #pragma omp parallel for num_threads(4) schedule(static)
                     for(int l = 0 ; l < combos1.size() ; l++){
                         vector<int> combA = combos1[l];
 
@@ -202,7 +201,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
                     }
 
-                    //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
+                    //After all of the combinedCombos have been generated. get their elements and put them in hashmap
                     pushToCollisionTable(combinedCombos, v);
 
 
@@ -329,10 +328,9 @@ fclose(fp);
     //call finalneighbors (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
-    //printf("Printing genBlocks paramters\n");
+
     for(int k = 0; k < output.size(); k ++){
 
-        
         genBlocks(output[k], (output[k][output[k].size()-1]).datum );
     }
 
