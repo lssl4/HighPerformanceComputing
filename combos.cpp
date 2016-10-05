@@ -46,7 +46,7 @@ void generate_combos(int n, int r) {
 
 int main(){
 
-    generate_combos(1,1);
+    generate_combos(56,4);
 
     return 0;
 
