@@ -118,12 +118,24 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
         }
 
+        /*if(collisionTable[keysSum].size() > 0){
+            //checking if the hashmap already has this block with this column id
+            for (int x = 0; x < collisionTable[keysSum].size(); ++x)
+            {
+                //if the column ids match, don't put in the hashmap
+                if(!(collisionTable[keysSum][x].col == newBlock.col)){
+                    //add to collision table, if it doesn't exist, it makes a new entry
+                    collisionTable[keysSum].push_back(newBlock);
+                }
+                
+            }
+        }else{
+            collisionTable[keysSum].push_back(newBlock);
+        }   */
 
-        //Assign keysSum to signature of block
-        //newBlock.signature = keysSum;
+            collisionTable[keysSum].push_back(newBlock);
 
-        //add to collision table, if it doesn't exist, it makes a new entry
-        collisionTable[keysSum].push_back(newBlock);
+        
 
     }
 }
@@ -369,15 +381,44 @@ int main(int argc, char* argv[]){
 
    int collisionSum = 0;
    int blocksGen = 0;
+
+   /*std::vector<long long int> keysExa;
+    keysExa.reserve(keysExa.size());
+   
+   for(auto kv: collisionTable){
+        keysExa.push_back(kv.first);
+   }
+
+
+
+   for(int x = 0 ; x = 5; x++){
+
+       cout<< "Key: "<< keysExa[x] << endl;
+       cout << "Rows: ";
+       for(int y = 0 ; y = collisionTable[keysExa[x]].size(); y++){
+
+            for(int z = 0 ; z < 4; z++)
+                 cout << collisionTable[keysExa[x]][y].rowIds[z] << " ";
+
+       }
+       cout << endl;
+   }*/
+
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
+
+
 
         //for each key add their value size
         blocksGen += (*it).second.size();
 
-        if((*it).second.size() > 1){
-            collisionSum++;
-        }
+            
+
+            if((*it).second.size() > 1){
+                collisionSum++;
+            }
+
+            
 
 
     }
