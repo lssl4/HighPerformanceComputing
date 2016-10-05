@@ -29,7 +29,7 @@ long long int *keys;
 double **mat;
 
 
-#include "finalNeighborsOMP.cpp"
+#include "finalNeighbors2OMP.cpp"
 
 
 

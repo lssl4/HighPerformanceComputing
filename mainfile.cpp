@@ -340,7 +340,7 @@ int main(int argc, char* argv[]){
 
 
     //sorting and generating the column by column
-    //for(int k = 0; k < cols-1; k++ ){
+    for(int k = 0; k < cols; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
     
@@ -349,7 +349,7 @@ int main(int argc, char* argv[]){
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][499];
+        el.datum =  mat[x][k];
 
 
         justAColumn[x] = el;
@@ -373,7 +373,7 @@ int main(int argc, char* argv[]){
 
 
 
-//}
+}
 
 
 

@@ -1,15 +1,11 @@
-
-
-
-
-bool lowHigh (ELEMENT i, ELEMENT j) { 
-    return (i.datum<j.datum); 
+bool lowHigh (ELEMENT i, ELEMENT j) {
+    return (i.datum<j.datum);
 }
 
-    
+
 vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
-   
+
 
 
     vector<vector<ELEMENT>> listOfNeigh;
@@ -19,15 +15,13 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     //last element index in s
     int lastIndex = 0;
-    
+
 
     //sort s
     sort(s.begin(), s.end(), lowHigh);
 
     //updating s with their sorted row id
     /*for(int x = 0 ; x < s.size(); x++){
-
-
     }*/
 
 
@@ -36,54 +30,54 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     {
         vector<ELEMENT> v1;
-       
+
         int pivot = 1;
 
-        
+
 
         //when start equals to prevLastIndex, move prevlastIndex by one
         if(prevLastIndex == start){
             prevLastIndex++;
         }
 
-    
 
 
-        //make v1 be consist of the subset of elements that have been seen from the previous neighborhood 
 
-        #pragma omp parallel for
+        //make v1 be consist of the subset of elements that have been seen from the previous neighborhood
+
+//#pragma omp parallel for
         for(int k = start ; k < prevLastIndex; k++){
-       
+
             v1.push_back(s[k]);
 
         }
-      
 
 
-        
 
-        //for each trailing s after start, check if it's within neighborhood. vectorsize -2 
+
+
+        //for each trailing s after start, check if it's within neighborhood. vectorsize -2
         //because of pivot number at end and shifting everything to the right by previous list size
-        //must set to <= because 
+        //must set to <= because
         for(int j = prevLastIndex; j <= s.size() ; j++){
-          
 
-         
+
 
 
             if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*dia) ){
 
 
-                v1.push_back(s[j]);
-              
 
-                
+                v1.push_back(s[j]);
+
+
+
             }
 
-            //if j is not within the dia distance, break and add the vector so far to the list
+                //if j is not within the dia distance, break and add the vector so far to the list
             else{
 
-                //if no new elements are added and j is still at prev index then break 
+                //if no new elements are added and j is still at prev index then break
                 if(j == prevLastIndex){
                     break;
                 }
@@ -91,45 +85,35 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
                 //if the neighborhood is greater than 4, vind the pivot
                 if(v1.size() >=4){
-                
+
                     //append pivot from last list information
                     if(listOfNeigh.size() >0){
 
-                         vector<ELEMENT> prevVector = listOfNeigh.back();
+                        vector<ELEMENT> prevVector = listOfNeigh.back();
 
-                         printf("printing previous list\nrows + data\n");
 
-                         for (int x = 0; x < prevVector.size(); ++x)
-                        {
-                            
-                            
 
-                            cout << prevVector[x].row <<" " <<prevVector[x].datum << endl;
 
-                         
-                        }
-                            
 
-                         //gets the row value of the last vector in listOfNeigh. -2 because the pivot is at the end of the vector but i want the last element
-                        
+                        //gets the row value of the last vector in listOfNeigh. -2 because the pivot is at the end of the vector but i want the last element
 
-                        printf("lastIndex: %i start: %i\n", lastIndex, start);
+
+
 
                         if(lastIndex - start >=0 ){
                             pivot = lastIndex - start +1;
                         }else{
                             //if rows don't overlap then just put the vector size as the pivot
-                             pivot = v1.size();
+                            pivot = v1.size();
                         }
 
-                            
-                        //updating lastIndex
-                        //lastIndex = 
 
-                    //if no vector in list then just do vector size    
+
+
+                        //if no vector in list then just do vector size
                     }else{
 
-                     
+
                         pivot = v1.size();
                     }
 
@@ -138,51 +122,46 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
 
 
-                    
-                        //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
-                        ELEMENT pivotEl;
-                        pivotEl.datum = pivot;
-                        v1.push_back(pivotEl);
 
-                        //after finding the longest neighborhood, push it in the list 
-                        listOfNeigh.push_back(v1);
+                    //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
+                    ELEMENT pivotEl;
+                    pivotEl.datum = pivot;
+                    v1.push_back(pivotEl);
 
-                    
-                  }
+                    //after finding the longest neighborhood, push it in the list
+                    listOfNeigh.push_back(v1);
 
-                
+
+                }
+
+
                 //update prevLastIndex with jth element which indicates which elements have been seen
                 prevLastIndex = j;
-                
-                
+
+
                 break;
             }
 
 
         }
-                 
+
     }
 
     /*printf("Print out list of neighbors\n" );
     for (int x = 0; x < listOfNeigh.size(); ++x)
     {
-        
+
         std::vector<ELEMENT> vexam = listOfNeigh[x];
         for(int y = 0; y < vexam.size(); ++y){
-
             cout << vexam[y].datum << " ";
         }
         cout << endl;
     }*/
-    
-
-     return listOfNeigh;
- 
- }
-
-    
 
 
+    return listOfNeigh;
+
+}
 
 
 
