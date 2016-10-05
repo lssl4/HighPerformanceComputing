@@ -35,7 +35,7 @@ double **mat;
 
 
 
-#include "finalNeighbors.cpp"
+#include "finalNeighbors2OMP.cpp"
 
 
 
@@ -92,8 +92,10 @@ After the 4 element combos have been generated and modified, generate the blocks
 */
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
-
+    omp_lock_t writelock;
+    omp_init_lock(&writelock);
     //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+    #pragma omp parallel for schedule(static)
     for(int k = 0; k < c.size(); k++){
 
 
@@ -118,26 +120,15 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
         }
 
-        /*if(collisionTable[keysSum].size() > 0){
-            //checking if the hashmap already has this block with this column id
-            for (int x = 0; x < collisionTable[keysSum].size(); ++x)
-            {
-                //if the column ids match, don't put in the hashmap
-                if(!(collisionTable[keysSum][x].col == newBlock.col)){
-                    //add to collision table, if it doesn't exist, it makes a new entry
-                    collisionTable[keysSum].push_back(newBlock);
-                }
-                
-            }
-        }else{
-            collisionTable[keysSum].push_back(newBlock);
-        }   */
 
-            collisionTable[keysSum].push_back(newBlock);
+        //Assign keysSum to signature of block
+        //newBlock.signature = keysSum;
 
-        
-
-    }
+        //add to collision table, if it doesn't exist, it makes a new entry
+        omp_set_lock(&writelock);
+        collisionTable[keysSum].push_back(newBlock);
+         omp_unset_lock(&writelock);
+    }omp_destroy_lock(&writelock);
 }
 
 
@@ -193,10 +184,12 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
+                    #pragma omp parallel for schedule(static)
                     for(int x = 0; x < combos2.size() ; x++){
                         vector<int>eachCom = combos2[x];
 
                         //adding each element in eachCom by pivot
+                        #pragma omp parallel for schedule(static)
                         for(int y = 0 ; y < eachCom.size(); y++){
 
                             eachCom[y] = eachCom[y] + pivot;
@@ -209,6 +202,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //after producing 2 sets of combos, combined them in a permutative manner
+                    #pragma omp parallel for schedule(static)
                     for(int l = 0 ; l < combos1.size() ; l++){
                         vector<int> combA = combos1[l];
 
@@ -299,7 +293,7 @@ int main(int argc, char* argv[]){
         fscanf(fp, "%lli", &keys[x]);
         
     }
-
+fclose(fp);
 
 //Getting the data.txt
     char buffer[5000] ; //big enough for 500 numbers
@@ -334,13 +328,14 @@ int main(int argc, char* argv[]){
 
     }
 
-    
+    fclose(fstream);
 
     
 
 
     //sorting and generating the column by column
-    //for(int k = 0; k < cols-1; k++ ){
+    #pragma omp parallel for schedule(static)
+    for(int k = 0; k < cols; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
     
@@ -349,7 +344,7 @@ int main(int argc, char* argv[]){
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][499];
+        el.datum =  mat[x][k];
 
 
         justAColumn[x] = el;
@@ -373,7 +368,7 @@ int main(int argc, char* argv[]){
 
 
 
-//}
+}
 
 
 
@@ -381,49 +376,21 @@ int main(int argc, char* argv[]){
 
    int collisionSum = 0;
    int blocksGen = 0;
-
-   /*std::vector<long long int> keysExa;
-    keysExa.reserve(keysExa.size());
-   
-   for(auto kv: collisionTable){
-        keysExa.push_back(kv.first);
-   }
-
-
-
-   for(int x = 0 ; x = 5; x++){
-
-       cout<< "Key: "<< keysExa[x] << endl;
-       cout << "Rows: ";
-       for(int y = 0 ; y = collisionTable[keysExa[x]].size(); y++){
-
-            for(int z = 0 ; z < 4; z++)
-                 cout << collisionTable[keysExa[x]][y].rowIds[z] << " ";
-
-       }
-       cout << endl;
-   }*/
-
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
-
-
 
         //for each key add their value size
         blocksGen += (*it).second.size();
 
-            
-
-            if((*it).second.size() > 1){
-                collisionSum++;
-            }
-
-            
+        if((*it).second.size() > 1){
+            collisionSum++;
+        }
 
 
     }
 
 
     cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
-
+    free(keys);
+    free(mat);
 }
