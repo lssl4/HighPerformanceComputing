@@ -68,11 +68,11 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
         for(int j = prevLastIndex; j <= s.size() ; j++){
           
 
-         
 
 
             if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*dia) ){
 
+                
 
                 v1.push_back(s[j]);
               
@@ -97,14 +97,14 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
                          vector<ELEMENT> prevVector = listOfNeigh.back();
 
-                         printf("printing previous list\nrows + data\n");
+                        
 
                          for (int x = 0; x < prevVector.size(); ++x)
                         {
                             
                             
 
-                            cout << prevVector[x].row <<" " <<prevVector[x].datum << endl;
+                            
 
                          
                         }
@@ -113,7 +113,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
                          //gets the row value of the last vector in listOfNeigh. -2 because the pivot is at the end of the vector but i want the last element
                         
 
-                        printf("lastIndex: %i start: %i\n", lastIndex, start);
+                        
 
                         if(lastIndex - start >=0 ){
                             pivot = lastIndex - start +1;
@@ -123,8 +123,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
                         }
 
                             
-                        //updating lastIndex
-                        //lastIndex = 
+                        
 
                     //if no vector in list then just do vector size    
                     }else{
