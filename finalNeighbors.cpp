@@ -19,7 +19,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     //last element index in s
     int lastIndex = 0;
-    int firstIndex = 0;
+    
 
     //sort s
     sort(s.begin(), s.end(), lowHigh);
@@ -133,7 +133,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
                         pivot = v1.size();
                     }
 
-                    //since the list is successful, update the first index and lastindex
+                    //since the list is successful, update the lastindex
                     lastIndex = j-1;
 
 
