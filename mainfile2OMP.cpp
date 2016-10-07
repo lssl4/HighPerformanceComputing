@@ -1,6 +1,9 @@
 /*
-Each row directly correspond with a key in the key array. 
-That is row 1 would correspond to key 1 in the key array
+This is the main file of our C++ implemented matrix collision program. This file requires other files such as finalNeighbors.cpp and type.h.
+Require argument line arugments: ./(progname) data.txt keys.txt rows columns dia
+
+This program generate blocks from columns of data with the same neighborhood.
+Each row in the data text directly correspond with a key in the key array with the same index. 
 */
 
 
@@ -23,11 +26,8 @@ using namespace std;
 
 #include "type.h"
 unordered_map<long long int, vector<BLOCK>> collisionTable;
-
 long long int *keys;
-
 double **mat;
-
 
 
 #include "finalNeighbors.cpp"
@@ -35,7 +35,7 @@ double **mat;
 
 
 /*
-Generate combinations of indices.
+Generate all the combinations of indices given an integer n and choosing r.
 */
 vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
@@ -67,15 +67,17 @@ vector<vector<int>> genCombos(int n, int r) {
 }
 
 /*
-After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable
+After the 4 element combinations called blocks have been generated and modified, 
+Assign and declare each combinations to a Block type and push to the global variable hashmap, collisionTable 
 */
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
     omp_lock_t writelock;
     omp_init_lock(&writelock);
 
-    // for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
-
+    
+// for each combinations generated in c, obtain the combination indices' elements from vect, the neighborhood, and generate blocks from them
+// to be inserted to the collision table
 #pragma omp parallel for num_threads(numThreads)
     for(int k = 0; k < c.size(); k++) {
 
