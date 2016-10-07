@@ -18,7 +18,7 @@ using namespace std;
 #include <vector>
 #include <iostream>
 #include <algorithm>
-
+#define numThreads 4
 
 
 #include "type.h"
@@ -76,7 +76,7 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
     // for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
 
-#pragma omp parallel for num_threads(4)
+#pragma omp parallel for num_threads(numThreads)
     for(int k = 0; k < c.size(); k++) {
 
         //for each element index in a combo generated, access v to get the appropriate element and put it in element list.
@@ -90,8 +90,6 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
             newBlock.rowIds.push_back(el.row);
             newBlock.col = el.col;
-
-
             keysSum += keys[el.row];
 
 
@@ -100,11 +98,11 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
         //add to collision table, if it doesn't exist, it makes a new entry
 
         omp_set_lock(&writelock);//prevents other threads writing to the same location
-
+//#pragma omp critical(a)
         collisionTable[keysSum].push_back(newBlock);
 
         omp_unset_lock(&writelock);
-    }omp_destroy_lock(&writelock);
+    }   omp_destroy_lock(&writelock);
 }
 
 
@@ -119,7 +117,8 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
     vector<vector<int>> combos2;
     int r =4;
     int blocksGen = 0;
-
+    omp_lock_t writelock;
+    omp_init_lock(&writelock);
 
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
     if(pivot==v.size()-1){
@@ -154,7 +153,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
-                    #pragma omp parallel for num_threads(4) schedule(static)
+                    #pragma omp parallel for
                     for(int x = 0; x < combos2.size() ; x++){
                         vector<int>eachCom = combos2[x];
 
@@ -172,7 +171,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                     //after producing 2 sets of combos, combined them in a permutative manner
-                    #pragma omp parallel for num_threads(4) schedule(static)
+                   #pragma omp parallel for num_threads(numThreads) schedule(static)
                     for(int l = 0 ; l < combos1.size() ; l++){
                         vector<int> combA = combos1[l];
 
@@ -184,19 +183,19 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
                             //inserting combos1 first
+
                             aCombinedCombo.insert(aCombinedCombo.end(),combA.begin(), combA.end());
 
                             //inserting combos2 second
+
                             aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
 
 
-
+                            omp_set_lock(&writelock);
                             //add the combined combo into combinedCombos
                             combinedCombos.push_back( aCombinedCombo );
-
-
-
-                        }
+                            omp_unset_lock(&writelock);
+                        }   omp_destroy_lock(&writelock);
 
 
                     }
@@ -304,7 +303,7 @@ fclose(fp);
 
 
     //sorting and generating the column by column
-#pragma omp num_threads(4) for schedule(static)
+#pragma omp num_threads(numThreads) for schedule(static)
     for(int k = 0; k < cols; k++ ){
 
     vector<ELEMENT> justAColumn(rows);
