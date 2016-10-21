@@ -1,10 +1,10 @@
 
 
 
-
+ /* struct for each element in the matrix */
 typedef struct ELEMENTS
 {
-  /* struct for each element in the matrix */
+
   int row;
   int col;
   
@@ -13,7 +13,7 @@ typedef struct ELEMENTS
   
 }ELEMENT;
 
-
+/*struct for BLOCKS containing the elements' rowIds and column location*/
 typedef struct BLOCKS
 {
 	

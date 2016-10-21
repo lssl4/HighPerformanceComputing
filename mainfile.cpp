@@ -1,6 +1,9 @@
 /*
-Each row directly correspond with a key in the key array. 
-That is row 1 would correspond to key 1 in the key array
+This is the main file of our C++ implemented matrix collision program. This file requires other files such as finalNeighbors.cpp and type.h.
+Require argument line arugments: ./(progname) data.txt keys.txt rows columns dia
+
+This program generate blocks from columns of data with the same neighborhood.
+Each row in the data text directly correspond with a key in the key array with the same index. 
 */
 
 
@@ -39,8 +42,9 @@ double **mat;
 
 
 
+
 /*
-Generate combinations of indices.
+Generate all the combinations of indices given an integer n and choosing r.
 */
 vector<vector<int>> genCombos(int n, int r) {
     vector<int> eachCom;
@@ -68,32 +72,20 @@ vector<vector<int>> genCombos(int n, int r) {
         }
     }
 
-    /*printf("Printing list of combos\n");
-    for (int x = 0; x < listOfCombos.size(); ++x)
-    {
-        
-        std::vector<int> vexam = listOfCombos[x];
-        for (int y = 0; y < vexam.size(); ++y)
-        {
-            
-            cout << vexam[y] << " ";
-
-        }
-        cout << "Size of combos: " <<listOfCombos.size();
-        cout << endl;
-
-    }*/
+   
 
     return listOfCombos;
 }
 
 /*
-After the 4 element combos have been generated and modified, generate the blocks from the combos and push to collisiontable
+After the 4 element combinations called blocks have been generated and modified, 
+Assign and declare each combinations to a Block type and push to the global variable hashmap, collisionTable 
 */
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
 
-    //for each combos generated in combos1, ultimately get the combo elements' block and insert them to the collision table
+// for each combinations generated in c, obtain the combination indices' elements from vect, the neighborhood, and generate blocks from them
+// to be inserted to the collision table
     for(int k = 0; k < c.size(); k++){
 
 
@@ -118,20 +110,8 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
         }
 
-        /*if(collisionTable[keysSum].size() > 0){
-            //checking if the hashmap already has this block with this column id
-            for (int x = 0; x < collisionTable[keysSum].size(); ++x)
-            {
-                //if the column ids match, don't put in the hashmap
-                if(!(collisionTable[keysSum][x].col == newBlock.col)){
-                    //add to collision table, if it doesn't exist, it makes a new entry
-                    collisionTable[keysSum].push_back(newBlock);
-                }
-                
-            }
-        }else{
-            collisionTable[keysSum].push_back(newBlock);
-        }   */
+       
+        //add to collision table, if it doesn't exist, it makes a new entry
 
             collisionTable[keysSum].push_back(newBlock);
 
@@ -176,20 +156,12 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
                 if( r1<=n1 &&r1 >=0 &&r2<=n2 &&r2 >=0 ){
                     vector<vector<int>> combinedCombos;
 
-
-                
-
+        
                     //iteratively decreasing r for the first combos
                     combos1 = genCombos(pivot, r-k-1);
 
-
-
-
-
                     //iteratively increasing r for the second combos
                     combos2 = genCombos((int)((v.size()-1)-pivot), k+1);
-
-
 
 
                     //adding all of the combos by pivot in combos2 to match the latter half of array indices
@@ -237,7 +209,8 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
                     }
 
-                    //AFter all of the combinedCombos have been generated. get their elements and put them in hashmap
+                    //After all of the combinedCombos have been generated, push the combinedCombs with the neighborhood v to the 
+                    //collision table
                     pushToCollisionTable(combinedCombos, v);
 
 
@@ -382,37 +355,12 @@ int main(int argc, char* argv[]){
    int collisionSum = 0;
    int blocksGen = 0;
 
-   /*std::vector<long long int> keysExa;
-    keysExa.reserve(keysExa.size());
-   
-   for(auto kv: collisionTable){
-        keysExa.push_back(kv.first);
-   }
-
-
-
-   for(int x = 0 ; x = 5; x++){
-
-       cout<< "Key: "<< keysExa[x] << endl;
-       cout << "Rows: ";
-       for(int y = 0 ; y = collisionTable[keysExa[x]].size(); y++){
-
-            for(int z = 0 ; z < 4; z++)
-                 cout << collisionTable[keysExa[x]][y].rowIds[z] << " ";
-
-       }
-       cout << endl;
-   }*/
-
      for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
       { 
-
-
 
         //for each key add their value size
         blocksGen += (*it).second.size();
 
-            
 
             if((*it).second.size() > 1){
                 collisionSum++;

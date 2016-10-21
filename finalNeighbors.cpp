@@ -1,8 +1,13 @@
+
+//Comparison function to compare the ELEMENT's values
 bool lowHigh (ELEMENT i, ELEMENT j) {
     return (i.datum<j.datum);
 }
 
 
+/*
+Returns the list of neighborhoods provided the whole column vector s and dia
+*/
 vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
 
@@ -19,10 +24,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     //sort s
     sort(s.begin(), s.end(), lowHigh);
-
-    //updating s with their sorted row id
-    /*for(int x = 0 ; x < s.size(); x++){
-    }*/
 
 
     //for element in s, find its neighborhood. skip finding neigbourhoods when all elements have been seen
@@ -42,7 +43,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
 
 
-
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood
 
 
@@ -52,25 +52,15 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
         }
 
-
-
-
-
         //for each trailing s after start, check if it's within neighborhood. vectorsize -2
         //because of pivot number at end and shifting everything to the right by previous list size
         //must set to <= because
         for(int j = prevLastIndex; j <= s.size() ; j++){
 
 
-
-
             if( j < s.size() && ( (int)( 1000000*(s[j].datum))- (int)( 1000000*(s[start].datum)) ) < (int)(1000000*dia) ){
 
-
-
                 v1.push_back(s[j]);
-
-
 
             }
 
@@ -91,13 +81,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
                         vector<ELEMENT> prevVector = listOfNeigh.back();
 
-
-
-
-
                         //gets the row value of the last vector in listOfNeigh. -2 because the pivot is at the end of the vector but i want the last element
-
-
 
 
                         if(lastIndex - start >=0 ){
@@ -107,20 +91,14 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
                             pivot = v1.size();
                         }
 
-
-
-
                         //if no vector in list then just do vector size
                     }else{
-
 
                         pivot = v1.size();
                     }
 
                     //since the list is successful, update the lastindex
                     lastIndex = j-1;
-
-
 
 
                     //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
@@ -147,16 +125,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     }
 
-    /*printf("Print out list of neighbors\n" );
-    for (int x = 0; x < listOfNeigh.size(); ++x)
-    {
-
-        std::vector<ELEMENT> vexam = listOfNeigh[x];
-        for(int y = 0; y < vexam.size(); ++y){
-            cout << vexam[y].datum << " ";
-        }
-        cout << endl;
-    }*/
 
 
     return listOfNeigh;
