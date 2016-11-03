@@ -249,7 +249,7 @@ int main(int argc, char* argv[]){
     int rows, cols;
     double dia;
     int sendProcessId;
-    boolean stopComplete =true;
+    int stopComplete =1; // 0 means false, 1 means true
 
 
     MPI_Datatype elementtype, oldtypes[2];
@@ -438,7 +438,7 @@ fclose(fp);
 
     //call finalneighbors function (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
-//
+
 
 
     //allocate the neighbors to the nodes that have the least amount of work
@@ -450,7 +450,7 @@ fclose(fp);
         //the process that has the least amount of blocks to be processed 
         PROCESS leastWork = allTheProcesses.front();
 
-        sendProcessId = leastWork.processId;
+        sendProcessId = 1;//leastWork.processId;
 
         unsigned long long totalCombinations = combosCalc(output.size(), 4);
     
@@ -461,6 +461,8 @@ fclose(fp);
         //sending the neighborhood to the leastWork process id
         int neighSize= static_cast<int>(output[k].size());
         
+ cout << "k: " << k<<endl;
+
         MPI_Send(&neighSize, 1, MPI_INT, 1, 1, MPI_COMM_WORLD);
        
        // MPI_Send(&output[k], output[k].size(), element_type, leastWork.processId, 2, MPI_COMM_WORLD);
@@ -484,32 +486,38 @@ fclose(fp);
 
          //do mpi barrier here to make sure all proceses have been finished
 
-         stopComplete = false;
+         stopComplete = 0;
+    MPI_Bcast(&stopComplete, 1, MPI_INT ,   0, MPI_COMM_WORLD);
 }
 
-while(true) {
-    if (myid == sendProcessId) {
-        int source = master;
-        vector <vector<ELEMENT>> listOfChunks;
-        vector <ELEMENT> chunkOfNeighborhood;
-        int sizeOfNeighborhood;
+    printf("my process id: %i\n", myid);
+
+    while(myid > master && stopComplete !=0) {
+        if (myid == sendProcessId) {
+
+            cout << "this is process id: " << myid << endl;
+            int source = master;
+            vector <vector<ELEMENT>> listOfChunks;
+            vector <ELEMENT> chunkOfNeighborhood;
+            int sizeOfNeighborhood;
 
 
 
-            MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
-            // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
+                MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
+                // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
 
-            /*for(int x =0; x < chunkOfNeighborhood.size(); x++){
-                 cout<< chunkOfNeighborhood[x].datum <<endl;
-            }*/
-            printf("Process 1 received number %d from process 0\n",
-                   sizeOfNeighborhood);
-            cout << "Size of: " << sizeOfNeighborhood << endl;
+                /*for(int x =0; x < chunkOfNeighborhood.size(); x++){
+                     cout<< chunkOfNeighborhood[x].datum <<endl;
+                }*/
+                printf("Process 1 received number %d from process 0\n",
+                       sizeOfNeighborhood);
+                cout << "Size of: " << sizeOfNeighborhood << endl;
 
+
+        }
 
     }
 
-}
 
 
 
