@@ -13,6 +13,7 @@ Each row in the data text directly correspond with a key in the key array with t
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
+#include <mpi.h>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ using namespace std;
 
 #include "type.h"
 unordered_map<long long int, vector<BLOCK>> collisionTable;
+vector<PROCESS> allTheProcesses;
 long long int *keys;
 double **mat;
 
@@ -103,7 +105,10 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
         collisionTable[keysSum].push_back(newBlock);
 
         omp_unset_lock(&writelock);
-    }   omp_destroy_lock(&writelock);
+    
+    }   
+
+    omp_destroy_lock(&writelock);
 }
 
 
@@ -218,9 +223,104 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 }
 
 
+unsigned long long combosCalc(unsigned long long n, unsigned long long k) {
+    if (k > n) {
+        return 0;
+    }
+    unsigned long long r = 1;
+    for (unsigned long long d = 1; d <= k; ++d) {
+        r *= n--;
+        r /= d;
+    }
+    return r;
+}
+
+//Comparison function to compare each process's blocksToBeGenerated value
+bool lowHighProcesses (PROCESS i, PROCESS j) {
+    return (i.totalBlocks<j.totalBlocks);
+}
 
 
 int main(int argc, char* argv[]){
+
+    int numprocs, myid, master = 0, blocksToBeGenerated =0; 
+
+    MPI_Datatype elementtype, oldtypes[2];
+    int blockcounts[2];
+    MPI_Aint    offsets[2], extent;
+    MPI_Status stat;
+
+   
+    
+
+
+     //starting mpi here
+     MPI_Init(&argc,&argv);
+     MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
+     MPI_Comm_rank(MPI_COMM_WORLD,&myid);
+
+     //Defining structs for MPI
+    ELEMENT elementExample; 
+
+    int countElement = 2;
+    //says the type of every block
+    MPI_Datatype arrayOfTypes[countElement];
+    arrayOfTypes[0] = MPI_INT;
+    arrayOfTypes[1] = MPI_LONG_DOUBLE;
+
+        //how many field variables in that struct
+        int arrayOfBlocklengths[countElement];
+        arrayOfBlocklengths[0] ={2};
+        arrayOfBlocklengths[1] ={1};
+
+            //Says where every block starts in memory, counting from the beginning of the struct.
+        MPI_Aint array_of_displacements[countElement];
+        MPI_Aint address1, address2, address3, address4;
+        MPI_Get_address(&elementExample,&address1);
+        MPI_Get_address(&elementExample.row,&address2);
+        
+        MPI_Get_address(&elementExample.datum,&address2);
+
+
+        array_of_displacements[0] = address2 - address1;
+        array_of_displacements[1] = address3 - address1;
+
+
+        //Create MPI Datatype and commit
+    MPI_Datatype element_type;
+    MPI_Type_create_struct(countElement, arrayOfBlocklengths, array_of_displacements, arrayOfTypes, &element_type);
+    MPI_Type_commit(&element_type);
+
+   /*  //for element structs
+      //setup description for row and col
+    offsets[0] = 0;
+   oldtypes[0] = MPI_INT;
+   blockcounts[0] = 2;
+
+     // setup description of the one long double
+   // need to first figure offset by getting size of MPI_FLOAT
+   MPI_Type_get_extent(MPI_INT, &extent);
+   offsets[1] = 2 * extent;
+   oldtypes[1] = MPI_LONG_DOUBLE;
+   blockcounts[1] = 1;
+
+     // define structured type and commit it. 2 because of 2 different types
+   MPI_Type_struct(2, blockcounts, offsets, oldtypes, &elementtype);
+   MPI_Type_commit(&elementtype);*/
+
+
+    //only master thread processes this code block
+     if(myid == master){
+
+    //creating each process in the eachProess array to keep track of each process totalblocks
+    for(int x = 0; x < numprocs; x++){
+
+        PROCESS p;
+        p.processId = x;
+        p.totalBlocks = 0;
+
+        allTheProcesses.push_back(p);
+    }
 
 
     if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
@@ -301,12 +401,15 @@ fclose(fp);
 
     fclose(fstream);
 
-    
+   
+
+
 
 
     //sorting and generating the column by column
 #pragma omp num_threads(numThreads) for schedule(static)
     for(int k = 0; k < cols; k++ ){
+
 
     vector<ELEMENT> justAColumn(rows);
     
@@ -330,14 +433,40 @@ fclose(fp);
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
-    for(int k = 0; k < output.size(); k ++){
 
-        genBlocks(output[k], (output[k][output[k].size()-1]).datum );
+    //allocate the neighbors to the nodes that have the least amount of work
+    for(int k = 0 ; k < output.size(); k++){
+
+        //sort the vector before allocating the neighborhoods to other processses to find the process that has the least amount of blocks
+        sort(allTheProcesses.begin(), allTheProcesses.end(), lowHighProcesses);
+
+        //the process that has the least amount of blocks to be processed 
+        PROCESS leastWork = allTheProcesses.front();
+
+
+        unsigned long long totalCombinations = combosCalc(output.size(), 4);
+    
+        leastWork.totalBlocks += totalCombinations;
+
+        //producing an vector of primitive types for it to be sent to through MPI sending
+
+        //sending the neighborhood to the leastWork process id
+        //MPI_Send(&output[k], output[k].size(), )
+
+
     }
 
 
 
+    /*for(int k = 0; k < output.size(); k ++){
 
+        genBlocks(output[k], (output[k][output[k].size()-1]).datum );
+    }*/
+
+
+
+
+    }
 }
 
 
@@ -363,4 +492,6 @@ fclose(fp);
     cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
     free(keys);
     free(mat);
+
+    MPI_Finalize();
 }

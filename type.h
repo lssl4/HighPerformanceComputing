@@ -23,6 +23,15 @@ typedef struct BLOCKS
 
 }BLOCK;
 
+typedef struct PROCESSES
+{
+
+  int processId;
+  unsigned long long totalBlocks;
+	
+
+}PROCESS;
+
 
 
 

@@ -103,7 +103,10 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
         collisionTable[keysSum].push_back(newBlock);
 
         omp_unset_lock(&writelock);
-    }   omp_destroy_lock(&writelock);
+    
+    }   
+
+    omp_destroy_lock(&writelock);
 }
 
 
@@ -222,6 +225,8 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 int main(int argc, char* argv[]){
 
+    int numprocs, myid; 
+
 
     if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
 
@@ -328,6 +333,11 @@ fclose(fp);
 
     //call finalneighbors function (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+
+    //allocate differerent blocks to differnt nodes from this point
+    MPI_Init(&argc,&argv);
+     MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
+     MPI_Comm_rank(MPI_COMM_WORLD,&myid);
 
 
     for(int k = 0; k < output.size(); k ++){
