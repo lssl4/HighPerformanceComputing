@@ -248,6 +248,8 @@ int main(int argc, char* argv[]){
     //more declarations
     int rows, cols;
     double dia;
+    int sendProcessId;
+    boolean stopComplete =true;
 
 
     MPI_Datatype elementtype, oldtypes[2];
@@ -436,7 +438,7 @@ fclose(fp);
 
     //call finalneighbors function (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
-
+//
 
 
     //allocate the neighbors to the nodes that have the least amount of work
@@ -448,6 +450,7 @@ fclose(fp);
         //the process that has the least amount of blocks to be processed 
         PROCESS leastWork = allTheProcesses.front();
 
+        sendProcessId = leastWork.processId;
 
         unsigned long long totalCombinations = combosCalc(output.size(), 4);
     
@@ -478,25 +481,32 @@ fclose(fp);
 
 
     }
+
+         //do mpi barrier here to make sure all proceses have been finished
+
+         stopComplete = false;
 }
 
+while(true) {
+    if (myid == sendProcessId) {
+        int source = master;
+        vector <vector<ELEMENT>> listOfChunks;
+        vector <ELEMENT> chunkOfNeighborhood;
+        int sizeOfNeighborhood;
 
-if (myid > master) {
-    int source = master;
-    vector<vector<ELEMENT>> listOfChunks;
-    vector<ELEMENT> chunkOfNeighborhood;
-    int sizeOfNeighborhood;
 
 
-    while(true){
-    MPI_Recv(&sizeOfNeighborhood, 1,     MPI_INT, source, 1, MPI_COMM_WORLD, &status);
-     // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
-      
-      /*for(int x =0; x < chunkOfNeighborhood.size(); x++){
-           cout<< chunkOfNeighborhood[x].datum <<endl;
-      }*/
+            MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
+            // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
 
-        cout << "Size of: " <<sizeOfNeighborhood << endl;
+            /*for(int x =0; x < chunkOfNeighborhood.size(); x++){
+                 cout<< chunkOfNeighborhood[x].datum <<endl;
+            }*/
+            printf("Process 1 received number %d from process 0\n",
+                   sizeOfNeighborhood);
+            cout << "Size of: " << sizeOfNeighborhood << endl;
+
+
     }
 
 }

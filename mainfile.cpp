@@ -125,6 +125,7 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 /*
 Generate blocks given a vector of ELEMENTS and pivot. v.size() -1 because it also contains the pivot at the end
 */
+
 int genBlocks(vector<ELEMENT> v, int pivot ){
 
     //2 combos vectors for block generations and to prevent redundant blocks
