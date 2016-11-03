@@ -248,7 +248,7 @@ int main(int argc, char* argv[]){
     MPI_Datatype elementtype, oldtypes[2];
     int blockcounts[2];
     MPI_Aint    offsets[2], extent;
-    MPI_Status stat;
+    MPI_Status status;
 
    
     
@@ -451,7 +451,11 @@ fclose(fp);
         //producing an vector of primitive types for it to be sent to through MPI sending
 
         //sending the neighborhood to the leastWork process id
-        //MPI_Send(&output[k], output[k].size(), )
+        unsigned int neighSize= output[k].size();
+
+        MPI_Send(&neighSize, 1, MPI_UNSIGNED, leastWork.processId, 1, MPI_COMM_WORLD);
+        MPI_Send(&output[k], output[k].size(), element_type, leastWork.processId, 2, MPI_COMM_WORLD);
+
 
 
     }
@@ -467,6 +471,25 @@ fclose(fp);
 
 
     }
+}
+
+
+if (myid > master) {
+    int source = master;
+    vector<vector<ELEMENT>> listOfChunks;
+    vector<ELEMENT> chunkOfNeighborhood;
+    unsigned int sizeOfNeighborhood;
+
+    MPI_Recv(&sizeOfNeighborhood, 1,
+                          MPI_UNSIGNED, source, 1,
+                         MPI_COMM_WORLD, &status);
+      MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood,
+                          elementtype, source, 2,
+                         MPI_COMM_WORLD, &status);
+      for(int x =0; x < chunkOfNeighborhood.size(); x++){
+           cout<< chunkOfNeighborhood[x].datum <<endl;
+      }
+
 }
 
 
