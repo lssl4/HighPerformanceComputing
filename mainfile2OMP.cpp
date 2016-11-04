@@ -259,15 +259,15 @@ int main(int argc, char* argv[]){
     int tag2;
     int dest;
     int offset;
-/*
+
     MPI_Datatype elementtype, oldtypes[2];
     int blockcounts[2];
     MPI_Aint    offsets[2], extent;
-    MPI_Status status;*/
+    MPI_Status status;
 
 
 
-    /* //starting mpi here
+     //starting mpi here
      MPI_Init(&argc,&argv);
      MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
      MPI_Comm_rank(MPI_COMM_WORLD,&myid);
@@ -302,9 +302,10 @@ int main(int argc, char* argv[]){
         //Create MPI Datatype and commit
     MPI_Datatype element_type;
     MPI_Type_create_struct(countElement, arrayOfBlocklengths, array_of_displacements, arrayOfTypes, &element_type);
-    MPI_Type_commit(&element_type);*/
+    MPI_Type_commit(&element_type);
 
-   /*  //for element structs
+/*
+    //for element structs setup
       //setup description for row and col
     offsets[0] = 0;
    oldtypes[0] = MPI_INT;
@@ -364,18 +365,20 @@ if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5]
     }
 fclose(fp);
 
-   /*//error checking
+   //error checking
    if(cols%numprocs !=0){
     printf("Quitting. Number of MPI tasks must be divisible by numprocs.\n");
     MPI_Abort(MPI_COMM_WORLD, rc);
     exit(0);
-   }*/
+   }
 
-   //chunklength = cols/numprocs;
+   chunklength = cols/numprocs;
+   tag1 = 1;
+   tag2 = 2;
 
 
     //only master thread processes this code block
-     //if(myid == master){
+     if(myid == master){
 
   /*  //creating each process in the eachProess array to keep track of each process totalblocks
     for(int x = 0; x < numprocs; x++){
@@ -414,7 +417,6 @@ fclose(fp);
         record = strtok(line,",");
         while(record != NULL)
         {
-            printf("i: %i j: %i record: %f\n",i,j ,atof(record));
 
             //printf("recodrd: %s\n",record) ;
             mat[i++][j] = atof(record) ;
@@ -430,23 +432,22 @@ fclose(fp);
     fclose(fstream);
 
    
-/*//distributing work
+//distributing work
 offset = chunklength;
 for(dest= 1 ; dest < numprocs; dest++){
 
-    for(int l= offset; l <cols; l = l+offset ){
-
-  
-    
-   
-
-
     MPI_Send(&offset, 1, MPI_INT, dest,
                         tag1, MPI_COMM_WORLD);
-    MPI_Send(&mat[offset], chunklength, MPI_FLOAT,
+    MPI_Send(&(mat[offset][0]), chunklength*rows, MPI_FLOAT,
                     dest, tag2, MPI_COMM_WORLD);
-    }
-}*/
+
+    offset += chunklength;
+    
+}
+
+//Master process work
+offset = 0;
+
 
 
 
@@ -454,7 +455,7 @@ for(dest= 1 ; dest < numprocs; dest++){
 //#pragma omp num_threads(numThreads) for schedule(static)
 
    
-    for(int k = 0; k < cols; k++ ){
+  /*  for(int k = 0; k < cols; k++ ){
 
 
     vector<ELEMENT> justAColumn(rows);
@@ -479,7 +480,7 @@ for(dest= 1 ; dest < numprocs; dest++){
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
-    /*//allocate the neighbors to the nodes that have the least amount of work
+    //allocate the neighbors to the nodes that have the least amount of work
     for(int k = 0 ; k < output.size(); k++){
 
         //sort the vector before allocating the neighborhoods to other processses to find the process that has the least amount of blocks
@@ -509,7 +510,7 @@ for(dest= 1 ; dest < numprocs; dest++){
         cout << "NeighSize: "<<neighSize << endl;
 
 
-    }*/
+    }
 
 
 
@@ -521,19 +522,46 @@ for(dest= 1 ; dest < numprocs; dest++){
 
 
 
-    }
+    }*/
 
          //do mpi barrier here to make sure all proceses have been finished
 
-         stopComplete = 0;
+        // stopComplete = 0;
         // MPI_Barrier(MPI_COMM_WORLD);
    // MPI_Bcast(&stopComplete, 1, MPI_INT ,   0, MPI_COMM_WORLD);
 
-//}
 
-    /*printf("my process id: %i\n", myid);
 
-    while(myid > master && stopComplete !=0) {
+
+}//end of master section
+
+
+//Non master section only
+if(myid >master){
+
+     MPI_Recv(&offset, 1, MPI_INT, master, tag1,
+                         MPI_COMM_WORLD, &status);
+  MPI_Recv(&(mat[offset][0]), chunklength*rows,
+                          MPI_FLOAT, master, tag2,
+                         MPI_COMM_WORLD, &status);
+
+
+ for(int x = offset; x < offset+chunklength; x++){
+
+    cout << x << "th column" << endl;
+    for(int y = 0 ; y < rows ; y ++){
+            //cout << x << " "  << y << endl;
+
+             cout << "value: "<< mat[x][y] << endl;
+        }
+  }
+
+
+
+}
+
+
+    /*while(myid > master && stopComplete !=0) {
 
         if (myid == sendProcessId) {
 
