@@ -52,7 +52,8 @@ int **alloc_2d_int(vector<vector<int>> v) {
     int *data = (int *)malloc(rows2d*cols2d*sizeof(int));
     int **array= (int **)malloc(rows2d*sizeof(int*));
     for (int i=0; i<rows2d; i++)
-        array[i] = &(data[cols2d*i]);
+        {array[i] = &(data[cols2d*i]);}
+
 
     return array;
 }
@@ -63,20 +64,23 @@ int** vectorTo2DArray(vector<vector<int>> v){
     int n = v.size();
     int m = v[0].size();
 
-     cout << "n: " << n << " m: " << m<< "hello"<<endl;
+     
 
     int** contInt2dArray = alloc_2d_int(v);
 
+    
     //populate contiguous 2d array
-    for(int i = 0 ; i < n; n++){
+    for(int x = 0 ; x < n; x++){
 
-        for(int j = 0 ; j < m ; j++){
+        for(int y = 0 ; y < m ; y++){
 
-                contInt2dArray[n][m] = v[n][m];
+                contInt2dArray[x][y] = v[x][y];
 
         }
 
     }
+
+   // cout << "n: " << n << " m: " << m<< "hello"<<endl;
    
     return contInt2dArray;
 
