@@ -408,6 +408,7 @@ fclose(fp);
     }
 
 
+
     while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
     {
 
@@ -415,11 +416,15 @@ fclose(fp);
         //always restart i (col) whenever you get a new row
         i =0;
         record = strtok(line,",");
+
+        
         while(record != NULL)
         {
 
             //printf("recodrd: %s\n",record) ;
             mat[i++][j] = atof(record) ;
+            /*i++;
+            printf("i: %i j: %i record: %f\n", i , j , atof(record));*/
             record = strtok(NULL,",");
 
         }
@@ -430,6 +435,7 @@ fclose(fp);
     }
 
     fclose(fstream);
+
 
 /*for(int x =0; x < cols; x++){
 
@@ -456,7 +462,6 @@ for(dest= 1 ; dest < numprocs; dest++){
 
 //Master process its own work
 offset = 0;
-
 
 for(int k = offset; k < offset + chunklength; k++ ){
 
@@ -703,5 +708,5 @@ if(myid >master){
     free(keys);
     free(mat);
 
-   // MPI_Finalize();
+    MPI_Finalize();
 }
