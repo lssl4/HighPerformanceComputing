@@ -126,6 +126,8 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
     omp_lock_t writelock;
     omp_init_lock(&writelock);
 
+
+
     //if pivot is the same value as the v's size, then go straight ahead and generate the combos for whole ELEMENT vector
     if(pivot==v.size()-1){
 
@@ -246,7 +248,7 @@ int main(int argc, char* argv[]){
     int numprocs, myid, master = 0, blocksToBeGenerated =0; 
 
     //more declarations
-    MPI_Status status;
+    //MPI_Status status;
     int rows, cols;
     double dia;
     int sendProcessId;
@@ -265,7 +267,7 @@ int main(int argc, char* argv[]){
 
 
 
-     //starting mpi here
+    /* //starting mpi here
      MPI_Init(&argc,&argv);
      MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
      MPI_Comm_rank(MPI_COMM_WORLD,&myid);
@@ -300,7 +302,7 @@ int main(int argc, char* argv[]){
         //Create MPI Datatype and commit
     MPI_Datatype element_type;
     MPI_Type_create_struct(countElement, arrayOfBlocklengths, array_of_displacements, arrayOfTypes, &element_type);
-    MPI_Type_commit(&element_type);
+    MPI_Type_commit(&element_type);*/
 
    /*  //for element structs
       //setup description for row and col
@@ -335,12 +337,11 @@ if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5]
 
       //initializing keys and mat
     keys = (long long int*)malloc(rows*sizeof(long long int));
-    mat = (double**) malloc( sizeof(double *) * rows );
+    mat = (double**) malloc( sizeof(double *) * cols );
 
-    for(int x=0; x < rows; x++) {
-        mat[x] = (double *)malloc(sizeof(double)*cols);
+    for(int x=0; x < cols; x++) {
+        mat[x] = (double *)malloc(sizeof(double)*rows);
     }
-
 
 
     //Reading in the keys.txt files
@@ -363,18 +364,18 @@ if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5]
     }
 fclose(fp);
 
-   //error checking
+   /*//error checking
    if(cols%numprocs !=0){
     printf("Quitting. Number of MPI tasks must be divisible by numprocs.\n");
     MPI_Abort(MPI_COMM_WORLD, rc);
     exit(0);
-   }
+   }*/
 
-   chunklength = cols/numprocs;
+   //chunklength = cols/numprocs;
 
 
     //only master thread processes this code block
-     if(myid == master){
+     //if(myid == master){
 
   /*  //creating each process in the eachProess array to keep track of each process totalblocks
     for(int x = 0; x < numprocs; x++){
@@ -403,29 +404,33 @@ fclose(fp);
         return -1 ;
     }
 
+
     while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
     {
-        //always restart j whenever you get a new row
-        j =0;
+
+
+        //always restart i (col) whenever you get a new row
+        i =0;
         record = strtok(line,",");
         while(record != NULL)
         {
+            printf("i: %i j: %i record: %f\n",i,j ,atof(record));
 
             //printf("recodrd: %s\n",record) ;
-            mat[i][j++] = atof(record) ;
+            mat[i++][j] = atof(record) ;
             record = strtok(NULL,",");
 
         }
 
         //increasing row number
-        ++i ;
+        ++j ;
 
     }
 
     fclose(fstream);
 
    
-
+/*//distributing work
 offset = chunklength;
 for(dest= 1 ; dest < numprocs; dest++){
 
@@ -441,7 +446,7 @@ for(dest= 1 ; dest < numprocs; dest++){
     MPI_Send(&mat[offset], chunklength, MPI_FLOAT,
                     dest, tag2, MPI_COMM_WORLD);
     }
-}
+}*/
 
 
 
@@ -459,12 +464,12 @@ for(dest= 1 ; dest < numprocs; dest++){
         ELEMENT el;
         el.row = x;
         el.col = 0;
-        el.datum =  mat[x][k];
+        el.datum =  mat[k][x];
 
 
         justAColumn[x] = el;
 
-
+        
 
     }
 
@@ -474,7 +479,7 @@ for(dest= 1 ; dest < numprocs; dest++){
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
-    //allocate the neighbors to the nodes that have the least amount of work
+    /*//allocate the neighbors to the nodes that have the least amount of work
     for(int k = 0 ; k < output.size(); k++){
 
         //sort the vector before allocating the neighborhoods to other processses to find the process that has the least amount of blocks
@@ -497,21 +502,21 @@ for(dest= 1 ; dest < numprocs; dest++){
         
  cout << "k: " << k<<endl;
 
-        MPI_Send(&neighSize, 1, MPI_INT, 1, 1, MPI_COMM_WORLD);
+       // MPI_Send(&neighSize, 1, MPI_INT, 1, 1, MPI_COMM_WORLD);
        
        // MPI_Send(&output[k], output[k].size(), element_type, leastWork.processId, 2, MPI_COMM_WORLD);
 
         cout << "NeighSize: "<<neighSize << endl;
 
 
-    }
+    }*/
 
 
 
-    /*for(int k = 0; k < output.size(); k ++){
+    for(int k = 0; k < output.size(); k ++){
 
         genBlocks(output[k], (output[k][output[k].size()-1]).datum );
-    }*/
+    }
 
 
 
@@ -521,12 +526,12 @@ for(dest= 1 ; dest < numprocs; dest++){
          //do mpi barrier here to make sure all proceses have been finished
 
          stopComplete = 0;
-         MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Bcast(&stopComplete, 1, MPI_INT ,   0, MPI_COMM_WORLD);
+        // MPI_Barrier(MPI_COMM_WORLD);
+   // MPI_Bcast(&stopComplete, 1, MPI_INT ,   0, MPI_COMM_WORLD);
 
-}
+//}
 
-    printf("my process id: %i\n", myid);
+    /*printf("my process id: %i\n", myid);
 
     while(myid > master && stopComplete !=0) {
 
@@ -543,9 +548,9 @@ for(dest= 1 ; dest < numprocs; dest++){
                 MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
                 // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
 
-                /*for(int x =0; x < chunkOfNeighborhood.size(); x++){
+                for(int x =0; x < chunkOfNeighborhood.size(); x++){
                      cout<< chunkOfNeighborhood[x].datum <<endl;
-                }*/
+                }
                 printf("Process 1 received number %d from process 0\n",
                        sizeOfNeighborhood);
                 cout << "Size of: " << sizeOfNeighborhood << endl;
@@ -553,7 +558,7 @@ for(dest= 1 ; dest < numprocs; dest++){
 
         }
 
-    }
+    }*/
 
 
 
@@ -580,5 +585,5 @@ for(dest= 1 ; dest < numprocs; dest++){
     free(keys);
     free(mat);
 
-    MPI_Finalize();
+   // MPI_Finalize();
 }

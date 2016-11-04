@@ -13,6 +13,8 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
 
 
+
+
     vector<vector<ELEMENT>> listOfNeigh;
 
     //index of the last seen element in array s
@@ -24,7 +26,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     //sort s
     sort(s.begin(), s.end(), lowHigh);
-
 
     //for element in s, find its neighborhood. skip finding neigbourhoods when all elements have been seen
     for (int start = 0; start < s.size() && prevLastIndex < s.size(); start++)
