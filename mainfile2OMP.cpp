@@ -242,6 +242,14 @@ bool lowHighProcesses (PROCESS i, PROCESS j) {
     return (i.totalBlocks<j.totalBlocks);
 }
 
+double **alloc_2d_double(int rows, int cols) {
+    double *data = (double *)malloc(rows*cols*sizeof(double));
+    double **array= (double **)malloc(cols*sizeof(double*));
+    for (int i=0; i<cols; i++)
+        array[i] = &(data[rows*i]);
+
+    return array;
+}
 
 int main(int argc, char* argv[]){
 
@@ -338,11 +346,7 @@ if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5]
 
       //initializing keys and mat
     keys = (long long int*)malloc(rows*sizeof(long long int));
-    mat = (double**) malloc( sizeof(double *) * cols );
-
-    for(int x=0; x < cols; x++) {
-        mat[x] = (double *)malloc(sizeof(double)*rows);
-    }
+    mat = alloc_2d_double(rows, cols);
 
 
     //Reading in the keys.txt files
@@ -373,6 +377,7 @@ fclose(fp);
    }
 
    chunklength = cols/numprocs;
+
    tag1 = 1;
    tag2 = 2;
 
@@ -430,6 +435,15 @@ fclose(fp);
     }
 
     fclose(fstream);
+
+/*for(int x =0; x < cols; x++){
+
+    cout << x <<"th column" <<endl;
+    for(int y = 0 ; y < rows ; y++){
+
+        cout << "value: " << mat[x][y] <<endl;
+    }
+}*/
 
    
 //distributing work
