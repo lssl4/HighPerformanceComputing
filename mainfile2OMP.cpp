@@ -452,7 +452,7 @@ for(dest= 1 ; dest < numprocs; dest++){
 
     MPI_Send(&offset, 1, MPI_INT, dest,
                         tag1, MPI_COMM_WORLD);
-    MPI_Send(&(mat[offset][0]), chunklength*rows, MPI_FLOAT,
+    MPI_Send(&(mat[offset][0]), chunklength*rows, MPI_DOUBLE,
                     dest, tag2, MPI_COMM_WORLD);
 
     offset += chunklength;
@@ -556,7 +556,7 @@ if(myid >master){
      MPI_Recv(&offset, 1, MPI_INT, master, tag1,
                          MPI_COMM_WORLD, &status);
   MPI_Recv(&(mat[offset][0]), chunklength*rows,
-                          MPI_FLOAT, master, tag2,
+                          MPI_DOUBLE, master, tag2,
                          MPI_COMM_WORLD, &status);
 
 
