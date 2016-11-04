@@ -500,18 +500,26 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 }//end of master processing its own work
 
 
-         for(int i; i<numprocs;i++) {
-             source = i;
-             for(int j; j<chunklength;j++){
-                 MPI_Recv(&blockComboSize, 1, MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
-                 vector<vector<int>> listOfBlockCombos(blockComboSize,vector<int>(4));
-                 MPI_Recv(&listOfBlockCombos[0][0],blockComboSize*4,MPI_INT,source,tag2,MPI_COMM_WORLD,&status);
-                 for(int k=0;k<blockComboSize;k++){
-                     for(int l=0; l<4;l++){
-                         cout<<listOfBlockCombos[k][l]<<" ";
-                     }cout<<endl;
-                 }
+         for(int x=0; x<numprocs;x++) {
+             source = x;
+             for(int y=0; y<chunklength;y++){
 
+                 MPI_Recv(&neighboursSize,1, MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
+                    cout<< "Neighbors size" << neighboursSize << endl;
+                 for(int z=0; z< neighboursSize;z++) {
+
+
+                     MPI_Recv(&blockComboSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD, &status);
+                     vector <vector<int>> listOfBlockCombos(blockComboSize, vector<int>(4));
+                     MPI_Recv(&listOfBlockCombos[0][0], blockComboSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
+                              &status);
+                     for (int k = 0; k < blockComboSize; k++) {
+                         for (int l = 0; l < 4; l++) {
+                             cout << listOfBlockCombos[k][l] << " ";
+                         }
+                         cout << endl;
+                     }
+                 }
              }
 
          }
@@ -628,9 +636,11 @@ if(myid >master){
         //sends info to main about the amount of neighbourhoods
         MPI_Send(&neighboursSize, 1,MPI_INT,master,tag1,MPI_COMM_WORLD);
 
-        for(int k = 0; k < output.size(); k ++){
-            vector<vector<int>> blockCombo = genBlockCombinations(output[k], (output[k][output[k].size()-1]).datum );
+        for(int l = 0; l < output.size(); l ++){
+            vector<vector<int>> blockCombo = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
             blockComboSize = blockCombo.size();
+
+
             MPI_Send(&blockComboSize, 1, MPI_INT, master, tag1, MPI_COMM_WORLD);
             MPI_Send(&blockCombo[0][0],blockComboSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
         }
