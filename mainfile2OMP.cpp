@@ -124,8 +124,11 @@ Returns the list of block combinations index
     vector<vector<int>> combos1;
     vector<vector<int>> combos2;
     int r =4;
-    omp_lock_t writelock;
-    omp_init_lock(&writelock);
+   
+   /*cout << "new neighborhood" << endl;
+   for(int x = 0 ; x < v.size(); x++){
+        cout << v[x].datum << endl;
+   }*/
 
 
 
@@ -200,11 +203,11 @@ Returns the list of block combinations index
                             aCombinedCombo.insert(aCombinedCombo.end(),combB.begin(), combB.end());
 
 
-                            omp_set_lock(&writelock);
+                           
                             //add the combined combo into the combinedCombos vector
                             combinedCombos.push_back( aCombinedCombo );
-                            omp_unset_lock(&writelock);
-                        }   omp_destroy_lock(&writelock);
+                            
+                        }   
 
 
                     }
@@ -500,25 +503,31 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 }//end of master processing its own work
 
 
-         for(int x=0; x<numprocs;x++) {
+         for(int x=1; x<numprocs;x++) {
+                               
+
              source = x;
              for(int y=0; y<chunklength;y++){
 
+
                  MPI_Recv(&neighboursSize,1, MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
-                    cout<< "Neighbors size" << neighboursSize << endl;
-                 for(int z=0; z< neighboursSize;z++) {
+                 for(int z=0; z < neighboursSize; z++ ){
 
 
-                     MPI_Recv(&blockComboSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD, &status);
+                     MPI_Recv(&blockComboSize, 1, MPI_INT, source, 3, MPI_COMM_WORLD, &status);
+                    
+                    cout<< "Neighbors size: " << neighboursSize <<" blockComboSize: " << blockComboSize << endl;
+
+
                      vector <vector<int>> listOfBlockCombos(blockComboSize, vector<int>(4));
                      MPI_Recv(&listOfBlockCombos[0][0], blockComboSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
                               &status);
-                     for (int k = 0; k < blockComboSize; k++) {
+                     /*for (int k = 0; k < blockComboSize; k++) {
                          for (int l = 0; l < 4; l++) {
                              cout << listOfBlockCombos[k][l] << " ";
                          }
                          cout << endl;
-                     }
+                     }*/
                  }
              }
 
@@ -628,20 +637,44 @@ if(myid >master){
             el.col = 0;
             el.datum = mat[k][x];
 
+
             justAColumn[x] = el;
         }
 
+
+        /*for(int l = 0 ; l < justAColumn.size() ; l++){
+            cout<< "value: "<<justAColumn[l].datum << endl;
+        }*/
+
         vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+
+        /*for(int l = 0 ; l < output.size() ; l ++){
+            cout << "the output[l]. size is: " << output[l].size() << endl;
+            for(int m = 0 ; m < output[l].size() ; m ++){
+                cout << "value: "<<output[l][m].datum << endl;
+            }
+        }*/
+
         neighboursSize = output.size();
         //sends info to main about the amount of neighbourhoods
         MPI_Send(&neighboursSize, 1,MPI_INT,master,tag1,MPI_COMM_WORLD);
 
         for(int l = 0; l < output.size(); l ++){
+            
+            
+            
             vector<vector<int>> blockCombo = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
+
+            /*for(int m =0 ; m < blockCombo.size(); m++){
+                for(int n =0 ; m < blockCombo[m].size(); m++){
+                    cout << blockCombo[m][n] << endl;
+                }
+            }*/
+
             blockComboSize = blockCombo.size();
 
 
-            MPI_Send(&blockComboSize, 1, MPI_INT, master, tag1, MPI_COMM_WORLD);
+            MPI_Send(&blockComboSize, 1, MPI_INT, master,3, MPI_COMM_WORLD);
             MPI_Send(&blockCombo[0][0],blockComboSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
         }
     }
