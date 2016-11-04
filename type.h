@@ -5,8 +5,9 @@
 typedef struct ELEMENTS
 {
 
-  int row;
   int col;
+  int row;
+
   
   long double datum;
 

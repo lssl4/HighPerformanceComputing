@@ -580,17 +580,42 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 //Non master section only
 if(myid >master){
 
-     MPI_Recv(&offset, 1, MPI_INT, master, tag1,
-                         MPI_COMM_WORLD, &status);
-  MPI_Recv(&(mat[offset][0]), chunklength*rows,
-                          MPI_DOUBLE, master, tag2,
-                         MPI_COMM_WORLD, &status);
+    MPI_Recv(&offset, 1, MPI_INT, master, tag1, MPI_COMM_WORLD, &status);
+    MPI_Recv(&(mat[offset][0]), chunklength*rows, MPI_DOUBLE, master, tag2, MPI_COMM_WORLD, &status);
 
- 
-  //
+    //create neighbourhoods, then send neighbourhoods to generate blocks
+    vector <ELEMENT> justAColumn(rows);
+    for(int k = offset; k < offset+chunklength; k++ ) {
+        for (int x = 0; x < rows; x++) {
 
-  //calling genBlockCombinations to get a list of block combinations
-  //genBlockCombinations()
+            ELEMENT el;
+            el.row = x;
+            el.col = 0;
+            el.datum = mat[k][x];
+
+            justAColumn[x] = el;
+        }
+
+        vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+        vector<vector<int>> blockCombo;
+        for(int k = 0; k < output.size(); k ++){
+            blockCombo = genBlockCombinations(output[k], (output[k][output[k].size()-1]).datum );
+            int blockComboSize = blockCombo.size();
+            MPI_Send(&blockComboSize, 1, MPI_INT, master, tag1, MPI_COMM_WORLD);
+            MPI_Send(&blockCombo[0][0],blockComboSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
+        }
+    }
+
+
+
+
+
+  //generate the neighbours from the data received from main, then call gen blocks to create blocks
+  // and return the blocks to master node
+
+
+//calling genBlockCombinations to get a list of block combinations
+//genBlockCombinations()
 
 
 
@@ -601,32 +626,32 @@ if(myid >master){
 }
 
 
-    /*while(myid > master && stopComplete !=0) {
+  /*while(myid > master && stopComplete !=0) {
 
-        if (myid == sendProcessId) {
+      if (myid == sendProcessId) {
 
-            cout << "this is process id: " << myid << endl;
-            int source = master;
-            vector <vector<ELEMENT>> listOfChunks;
-            vector <ELEMENT> chunkOfNeighborhood;
-            int sizeOfNeighborhood;
-
-
-
-                MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
-                // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
-
-                for(int x =0; x < chunkOfNeighborhood.size(); x++){
-                     cout<< chunkOfNeighborhood[x].datum <<endl;
-                }
-                printf("Process 1 received number %d from process 0\n",
-                       sizeOfNeighborhood);
-                cout << "Size of: " << sizeOfNeighborhood << endl;
+          cout << "this is process id: " << myid << endl;
+          int source = master;
+          vector <vector<ELEMENT>> listOfChunks;
+          vector <ELEMENT> chunkOfNeighborhood;
+          int sizeOfNeighborhood;
 
 
-        }
 
-    }*/
+              MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
+              // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
+
+              for(int x =0; x < chunkOfNeighborhood.size(); x++){
+                   cout<< chunkOfNeighborhood[x].datum <<endl;
+              }
+              printf("Process 1 received number %d from process 0\n",
+                     sizeOfNeighborhood);
+              cout << "Size of: " << sizeOfNeighborhood << endl;
+
+
+      }
+
+  }*/
 
 
 
