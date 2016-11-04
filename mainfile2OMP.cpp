@@ -246,19 +246,23 @@ int main(int argc, char* argv[]){
     int numprocs, myid, master = 0, blocksToBeGenerated =0; 
 
     //more declarations
+    MPI_Status status;
     int rows, cols;
     double dia;
     int sendProcessId;
     int stopComplete =1; // 0 means false, 1 means true
-
-
+    int rc;
+    int chunklength;
+    int tag1;
+    int tag2;
+    int dest;
+    int offset;
+/*
     MPI_Datatype elementtype, oldtypes[2];
     int blockcounts[2];
     MPI_Aint    offsets[2], extent;
-    MPI_Status status;
+    MPI_Status status;*/
 
-   
-    
 
 
      //starting mpi here
@@ -315,35 +319,21 @@ int main(int argc, char* argv[]){
    MPI_Type_struct(2, blockcounts, offsets, oldtypes, &elementtype);
    MPI_Type_commit(&elementtype);*/
 
-
-    //only master thread processes this code block
-     if(myid == master){
-
-    //creating each process in the eachProess array to keep track of each process totalblocks
-    for(int x = 0; x < numprocs; x++){
-
-        PROCESS p;
-        p.processId = x;
-        p.totalBlocks = 0;
-
-        allTheProcesses.push_back(p);
-    }
-
-
-    if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
+  
+if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
 
         printf("Please give the correct arguments: progName datafilename keysfilename rows columns dia\n");
 
         return -1;
     }
 
-    
+
     rows = atoi(argv[3]);
     cols = atoi(argv[4]);
     dia = atof(argv[5]);
 
 
-    //initializing keys and mat
+      //initializing keys and mat
     keys = (long long int*)malloc(rows*sizeof(long long int));
     mat = (double**) malloc( sizeof(double *) * rows );
 
@@ -372,6 +362,32 @@ int main(int argc, char* argv[]){
         
     }
 fclose(fp);
+
+   //error checking
+   if(cols%numprocs !=0){
+    printf("Quitting. Number of MPI tasks must be divisible by numprocs.\n");
+    MPI_Abort(MPI_COMM_WORLD, rc);
+    exit(0);
+   }
+
+   chunklength = cols/numprocs;
+
+
+    //only master thread processes this code block
+     if(myid == master){
+
+  /*  //creating each process in the eachProess array to keep track of each process totalblocks
+    for(int x = 0; x < numprocs; x++){
+
+        PROCESS p;
+        p.processId = x;
+        p.totalBlocks = 0;
+
+        allTheProcesses.push_back(p);
+    }*/
+
+
+
 
 //Getting the data.txt
     char buffer[5000] ; //big enough for 500 numbers
@@ -410,11 +426,29 @@ fclose(fp);
 
    
 
+offset = chunklength;
+for(dest= 1 ; dest < numprocs; dest++){
+
+    for(int l= offset; l <cols; l = l+offset ){
+
+  
+    
+   
+
+
+    MPI_Send(&offset, 1, MPI_INT, dest,
+                        tag1, MPI_COMM_WORLD);
+    MPI_Send(&mat[offset], chunklength, MPI_FLOAT,
+                    dest, tag2, MPI_COMM_WORLD);
+    }
+}
 
 
 
     //sorting and generating the column by column
 //#pragma omp num_threads(numThreads) for schedule(static)
+
+   
     for(int k = 0; k < cols; k++ ){
 
 
@@ -430,7 +464,7 @@ fclose(fp);
 
         justAColumn[x] = el;
 
-        
+
 
     }
 
@@ -438,7 +472,6 @@ fclose(fp);
 
     //call finalneighbors function (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
-
 
 
     //allocate the neighbors to the nodes that have the least amount of work
@@ -451,6 +484,7 @@ fclose(fp);
         PROCESS leastWork = allTheProcesses.front();
 
         sendProcessId = 1;//leastWork.processId;
+        
 
         unsigned long long totalCombinations = combosCalc(output.size(), 4);
     
@@ -487,12 +521,15 @@ fclose(fp);
          //do mpi barrier here to make sure all proceses have been finished
 
          stopComplete = 0;
+         MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&stopComplete, 1, MPI_INT ,   0, MPI_COMM_WORLD);
+
 }
 
     printf("my process id: %i\n", myid);
 
     while(myid > master && stopComplete !=0) {
+
         if (myid == sendProcessId) {
 
             cout << "this is process id: " << myid << endl;
