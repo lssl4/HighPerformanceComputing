@@ -385,17 +385,6 @@ fclose(fp);
     //only master thread processes this code block
      if(myid == master){
 
-  /*  //creating each process in the eachProess array to keep track of each process totalblocks
-    for(int x = 0; x < numprocs; x++){
-
-        PROCESS p;
-        p.processId = x;
-        p.totalBlocks = 0;
-
-        allTheProcesses.push_back(p);
-    }*/
-
-
 
 
 //Getting the data.txt
@@ -459,8 +448,46 @@ for(dest= 1 ; dest < numprocs; dest++){
     
 }
 
-//Master process work
+//Master process its own work
 offset = 0;
+
+
+for(int k = offset; k < offset + chunklength; k++ ){
+
+
+    vector<ELEMENT> justAColumn(rows);
+    
+    for(int x = 0 ; x < rows; x++){
+
+        ELEMENT el;
+        el.row = x;
+        el.col = 0;
+        el.datum =  mat[k][x];
+
+
+        justAColumn[x] = el;
+
+        
+
+    }
+
+
+//call finalneighbors function (getNeighbors) for the column. Returns a list of neighborhoods in that column
+vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+
+ for(int l = 0; l < output.size(); l++){
+
+        vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
+
+        //once the block combinations have been received, push to collision table with blockCombos and the neighborhood in question
+         pushToCollisionTable(blockCombos, output[l]);
+
+
+}
+
+
+}//end of master processing its own work
+
 
 
 
