@@ -1,4 +1,4 @@
-collisionSum: 0 BlocksGen: 0
+hello
 --------------------------------------------------------------------------
-mpirun noticed that process rank 0 with PID 0 on node SLs-MacBook-Pro exited on signal 11 (Segmentation fault: 11).
+mpirun noticed that process rank 1 with PID 0 on node SLs-MacBook-Pro exited on signal 11 (Segmentation fault: 11).
 --------------------------------------------------------------------------

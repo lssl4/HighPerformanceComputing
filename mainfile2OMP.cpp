@@ -35,6 +35,55 @@ double **mat;
 #include "finalNeighbors.cpp"
 
 
+double **alloc_2d_double(int rows2d, int cols2d) {
+    double *data = (double *)malloc(rows2d*cols2d*sizeof(double));
+    double **array= (double **)malloc(cols2d*sizeof(double*));
+    for (int i=0; i<cols2d; i++)
+        array[i] = &(data[rows2d*i]);
+
+    return array;
+}
+
+int **alloc_2d_int(vector<vector<int>> v) {
+
+    int rows2d = v.size();
+    int cols2d = v[0].size();
+
+    int *data = (int *)malloc(rows2d*cols2d*sizeof(int));
+    int **array= (int **)malloc(rows2d*sizeof(int*));
+    for (int i=0; i<rows2d; i++)
+        array[i] = &(data[cols2d*i]);
+
+    return array;
+}
+
+int** vectorTo2DArray(vector<vector<int>> v){
+
+
+    int n = v.size();
+    int m = v[0].size();
+
+     cout << "n: " << n << " m: " << m<< "hello"<<endl;
+
+    int** contInt2dArray = alloc_2d_int(v);
+
+    //populate contiguous 2d array
+    for(int i = 0 ; i < n; n++){
+
+        for(int j = 0 ; j < m ; j++){
+
+                contInt2dArray[n][m] = v[n][m];
+
+        }
+
+    }
+   
+    return contInt2dArray;
+
+}
+
+
+
 
 /*
 Generate all the combinations of indices given an integer n and choosing r.
@@ -136,6 +185,10 @@ Returns the list of block combinations index
     if(pivot==v.size()-1){
 
         combos1 = genCombos( ((int)v.size())-1, r);
+
+
+
+
 
         return combos1;
 
@@ -245,14 +298,6 @@ bool lowHighProcesses (PROCESS i, PROCESS j) {
     return (i.totalBlocks<j.totalBlocks);
 }
 
-double **alloc_2d_double(int rows, int cols) {
-    double *data = (double *)malloc(rows*cols*sizeof(double));
-    double **array= (double **)malloc(cols*sizeof(double*));
-    for (int i=0; i<cols; i++)
-        array[i] = &(data[rows*i]);
-
-    return array;
-}
 
 int main(int argc, char* argv[]){
 
@@ -275,7 +320,7 @@ int main(int argc, char* argv[]){
 
     //Processing work variables
     int neighboursSize;
-    int blockComboSize;
+    int blockCombosSize;
 
     MPI_Datatype elementtype, oldtypes[2];
     int blockcounts[2];
@@ -503,31 +548,33 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 }//end of master processing its own work
 
 
+//receiving results from other processes
          for(int x=1; x<numprocs;x++) {
                                
 
              source = x;
              for(int y=0; y<chunklength;y++){
 
-
+                //gets how many neighborhoods there are for that column
                  MPI_Recv(&neighboursSize,1, MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
                  for(int z=0; z < neighboursSize; z++ ){
 
-
-                     MPI_Recv(&blockComboSize, 1, MPI_INT, source, 3, MPI_COMM_WORLD, &status);
+                    //gets the number of the block combinations generated from the neighborhood
+                     MPI_Recv(&blockCombosSize, 1, MPI_INT, source, 3, MPI_COMM_WORLD, &status);
                     
-                    cout<< "Neighbors size: " << neighboursSize <<" blockComboSize: " << blockComboSize << endl;
+                    //cout<< "Neighbors size: " << neighboursSize <<" blockCombosSize: " << blockCombosSize << endl;
 
 
-                     vector <vector<int>> listOfBlockCombos(blockComboSize, vector<int>(4));
-                     MPI_Recv(&listOfBlockCombos[0][0], blockComboSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
+                     int listOfBlockCombos[blockCombosSize][4];
+
+                     MPI_Recv(&listOfBlockCombos[0][0], blockCombosSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
                               &status);
-                     /*for (int k = 0; k < blockComboSize; k++) {
+                     for (int k = 0; k < blockCombosSize; k++) {
                          for (int l = 0; l < 4; l++) {
                              cout << listOfBlockCombos[k][l] << " ";
                          }
                          cout << endl;
-                     }*/
+                     }
                  }
              }
 
@@ -663,7 +710,7 @@ if(myid >master){
             
             
             
-            vector<vector<int>> blockCombo = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
+            vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
 
             /*for(int m =0 ; m < blockCombo.size(); m++){
                 for(int n =0 ; m < blockCombo[m].size(); m++){
@@ -671,11 +718,15 @@ if(myid >master){
                 }
             }*/
 
-            blockComboSize = blockCombo.size();
+            blockCombosSize = blockCombos.size();
 
 
-            MPI_Send(&blockComboSize, 1, MPI_INT, master,3, MPI_COMM_WORLD);
-            MPI_Send(&blockCombo[0][0],blockComboSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
+            MPI_Send(&blockCombosSize, 1, MPI_INT, master,3, MPI_COMM_WORLD);
+
+            int **blockCombos2dArray = vectorTo2DArray(blockCombos);
+
+
+            MPI_Send(&blockCombos2dArray[0][0],blockCombosSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
         }
     }
 
