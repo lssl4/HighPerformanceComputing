@@ -71,6 +71,7 @@ vector<vector<int>> genCombos(int n, int r) {
 /*
 After the 4 element combinations called blocks have been generated and modified, 
 Assign and declare each combinations to a Block type and push to the global variable hashmap, collisionTable 
+c is the list of block combinations. vect is the vector of neighborhood
 */
 void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
@@ -115,14 +116,14 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
 
 /*
 Generate blocks given a vector of ELEMENTS and pivot. v.size() -1 because it also contains the pivot at the end of the vector of ELEMENTS
+Returns the list of block combinations index
 */
-int genBlocks(vector<ELEMENT> v, int pivot ){
+ vector<vector<int>> genBlockCombinations(vector<ELEMENT> v, int pivot ){
 
     //2 combos vectors for block generations and to prevent redundant blocks
     vector<vector<int>> combos1;
     vector<vector<int>> combos2;
     int r =4;
-    int blocksGen = 0;
     omp_lock_t writelock;
     omp_init_lock(&writelock);
 
@@ -133,7 +134,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
         combos1 = genCombos( ((int)v.size())-1, r);
 
-        pushToCollisionTable(combos1, v);
+        return combos1;
 
     
     //else if there's a pivot
@@ -210,7 +211,7 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
                     //After all of the combinedCombos have been generated, push the combinedCombs with the neighborhood v to the 
                     //collision table
-                    pushToCollisionTable(combinedCombos, v);
+                   return combinedCombos;
 
 
                 }
@@ -221,7 +222,6 @@ int genBlocks(vector<ELEMENT> v, int pivot ){
 
 
     }
-    return blocksGen;
 }
 
 
@@ -559,16 +559,15 @@ if(myid >master){
                           MPI_DOUBLE, master, tag2,
                          MPI_COMM_WORLD, &status);
 
+ 
+  //
 
- for(int x = offset; x < offset+chunklength; x++){
+  //calling genBlockCombinations to get a list of block combinations
+  //genBlockCombinations()
 
-    cout << x << "th column" << endl;
-    for(int y = 0 ; y < rows ; y ++){
-            //cout << x << " "  << y << endl;
 
-             cout << "value: "<< mat[x][y] << endl;
-        }
-  }
+
+
 
 
 
