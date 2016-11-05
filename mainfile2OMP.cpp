@@ -419,28 +419,7 @@ int main(int argc, char* argv[]){
     MPI_Type_create_struct(countBlock, arrayOfBlocklengths, array_of_displacements, arrayOfTypes, &block_type);
     MPI_Type_commit(&block_type);
 
-/*
-    //for element structs setup
-      //setup description for row and col
 
- MPI_Datatype elementtype, oldtypes[2];
-    int blockcounts[2];
-    MPI_Aint    offsets[2], extent;
-
-    offsets[0] = 0;
-   oldtypes[0] = MPI_INT;
-   blockcounts[0] = 2;
-
-     // setup description of the one long double
-   // need to first figure offset by getting size of MPI_FLOAT
-   MPI_Type_get_extent(MPI_INT, &extent);
-   offsets[1] = 2 * extent;
-   oldtypes[1] = MPI_LONG_DOUBLE;
-   blockcounts[1] = 1;
-
-     // define structured type and commit it. 2 because of 2 different types
-   MPI_Type_struct(2, blockcounts, offsets, oldtypes, &elementtype);
-   MPI_Type_commit(&elementtype);*/
 
   
 if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
@@ -628,12 +607,17 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                               &status);
                      
                      //Receiving the list of blocks generated
-                     MPI_Recv(&blockList, blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
+                     MPI_Recv(&blockList[0], blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
 
                      //once the list of block combinations are received, push to collision table                     
                      //pushToCollisionTable(blockList, blockCombosSize);
 
-                     
+                     for (int x = 0; x < blockCombosSize; x++) {
+                         for (int y = 0 ; y < 4; y++) {
+                             cout << blockList[x].rowIds[y] << " ";
+                         }
+                         cout << endl;
+                     }
 
 
 
@@ -799,8 +783,8 @@ if(myid >master){
             //Now generate blocks from the block combinations
             blockList = genBlocks(blockCombos, output[l]);
 
-            //Now we can send the list back to the master process
-            MPI_Send(&blockList, sizeof(blockList)/sizeof(blockList[0]), block_type, master, tag2, MPI_COMM_WORLD);
+            //Now we can send the block list back to the master process
+            MPI_Send(&blockList[0], sizeof(blockList)/sizeof(blockList[0]), block_type, master, tag2, MPI_COMM_WORLD);
 
 
 
