@@ -557,14 +557,18 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                                
 
              source = x;
+             //for each column that a process is responsible for 
              for(int y=0; y<chunklength;y++){
 
                 //gets how many neighborhoods there are for that column
                  MPI_Recv(&neighboursSize,1, MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
+
+
+                 //for each neighborhood in that column
                  for(int z=0; z < neighboursSize; z++ ){
 
                     //gets the number of the block combinations generated from the neighborhood
-                     MPI_Recv(&blockCombosSize, 1, MPI_INT, source, 3, MPI_COMM_WORLD, &status);
+                     MPI_Recv(&blockCombosSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD, &status);
                     
                     //cout<< "Neighbors size: " << neighboursSize <<" blockCombosSize: " << blockCombosSize << endl;
 
@@ -573,12 +577,17 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
                      MPI_Recv(&listOfBlockCombos[0][0], blockCombosSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
                               &status);
-                     for (int k = 0; k < blockCombosSize; k++) {
+                     
+
+                     /*for (int k = 0; k < blockCombosSize; k++) {
                          for (int l = 0; l < 4; l++) {
                              cout << listOfBlockCombos[k][l] << " ";
                          }
                          cout << endl;
-                     }
+                     }*/
+
+
+                         
                  }
              }
 
@@ -680,6 +689,7 @@ if(myid >master){
     //create neighbourhoods, then send neighbourhoods to generate blocks
     vector <ELEMENT> justAColumn(rows);
 
+    //for each column in that chunk
     for(int k = offset; k < offset+chunklength; k++ ) {
         for (int x = 0; x < rows; x++) {
 
@@ -710,6 +720,7 @@ if(myid >master){
         //sends info to main about the amount of neighbourhoods
         MPI_Send(&neighboursSize, 1,MPI_INT,master,tag1,MPI_COMM_WORLD);
 
+        //for each neighborhood in that column
         for(int l = 0; l < output.size(); l ++){
             
             
@@ -722,10 +733,11 @@ if(myid >master){
                 }
             }*/
 
+            //how many block combinations in that neighborhood
             blockCombosSize = blockCombos.size();
 
 
-            MPI_Send(&blockCombosSize, 1, MPI_INT, master,3, MPI_COMM_WORLD);
+            MPI_Send(&blockCombosSize, 1, MPI_INT, master,tag1, MPI_COMM_WORLD);
 
             int **blockCombos2dArray = vectorTo2DArray(blockCombos);
 
