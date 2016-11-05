@@ -666,37 +666,7 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
     vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
-    //allocate the neighbors to the nodes that have the least amount of work
-    for(int k = 0 ; k < output.size(); k++){
-
-        //sort the vector before allocating the neighborhoods to other processses to find the process that has the least amount of blocks
-        sort(allTheProcesses.begin(), allTheProcesses.end(), lowHighProcesses);
-
-        //the process that has the least amount of blocks to be processed 
-        PROCESS leastWork = allTheProcesses.front();
-
-        sendProcessId = 1;//leastWork.processId;
-        
-
-        unsigned long long totalCombinations = combosCalc(output.size(), 4);
-    
-        leastWork.totalBlocks += totalCombinations;
-
-        //producing an vector of primitive types for it to be sent to through MPI sending
-
-        //sending the neighborhood to the leastWork process id
-        int neighSize= static_cast<int>(output[k].size());
-        
- cout << "k: " << k<<endl;
-
-       // MPI_Send(&neighSize, 1, MPI_INT, 1, 1, MPI_COMM_WORLD);
-       
-       // MPI_Send(&output[k], output[k].size(), element_type, leastWork.processId, 2, MPI_COMM_WORLD);
-
-        cout << "NeighSize: "<<neighSize << endl;
-
-
-    }
+   
 
 
 
@@ -710,11 +680,7 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
     }*/
 
-         //do mpi barrier here to make sure all proceses have been finished
-
-        // stopComplete = 0;
-        // MPI_Barrier(MPI_COMM_WORLD);
-   // MPI_Bcast(&stopComplete, 1, MPI_INT ,   0, MPI_COMM_WORLD);
+        
 
 
 
@@ -814,23 +780,10 @@ if(myid >master){
 
 
 
-  //generate the neighbours from the data received from main, then call gen blocks to create blocks
-  // and return the blocks to master node
-
-
-//calling genBlockCombinations to get a list of block combinations
-//genBlockCombinations()
-
-
-
-
 
 
 
 }//End of non master processes work
-
-
-
 
 
 
