@@ -44,10 +44,9 @@ double **alloc_2d_double(int rows2d, int cols2d) {
     return array;
 }
 
-int **alloc_2d_int(vector<vector<int>> v) {
+int **alloc_2d_int(int rows2d, int cols2d){
 
-    int rows2d = v.size();
-    int cols2d = v[0].size();
+   
 
     int *data = (int *)malloc(rows2d*cols2d*sizeof(int));
     int **array= (int **)malloc(rows2d*sizeof(int*));
@@ -66,7 +65,7 @@ int** vectorTo2DArray(vector<vector<int>> v){
 
      
 
-    int** contInt2dArray = alloc_2d_int(v);
+    int** contInt2dArray = alloc_2d_int(n,m);
 
     
     //populate contiguous 2d array
@@ -573,21 +572,23 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                     //cout<< "Neighbors size: " << neighboursSize <<" blockCombosSize: " << blockCombosSize << endl;
 
 
-                     int listOfBlockCombos[blockCombosSize][4];
+                     int** listOfBlockCombos = alloc_2d_int(blockCombosSize, 4);
+
+
 
                      MPI_Recv(&listOfBlockCombos[0][0], blockCombosSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
                               &status);
                      
 
-                     /*for (int k = 0; k < blockCombosSize; k++) {
+                     for (int k = 0; k < blockCombosSize; k++) {
                          for (int l = 0; l < 4; l++) {
                              cout << listOfBlockCombos[k][l] << " ";
                          }
                          cout << endl;
-                     }*/
+                     }
 
 
-                         
+
                  }
              }
 
