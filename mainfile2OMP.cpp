@@ -147,8 +147,8 @@ void pushToCollisionTable(BLOCK *givenBlockList, int blockListSize){
     omp_lock_t writelock;
     omp_init_lock(&writelock);
 
-
-#pragma omp parallel for num_threads(numThreads)
+    
+//#pragma omp parallel for num_threads(numThreads)
     for(int k = 0; k < blockListSize; k++) {
 
        
@@ -268,7 +268,7 @@ Returns the list of block combinations index
 
 
                     //adding all of the combos by pivot number in combos2 to match the latter half of array indices
-                    #pragma omp parallel for
+                    //#pragma omp parallel for
                     for(int x = 0; x < combos2.size() ; x++){
                         vector<int>eachCom = combos2[x];
 
@@ -285,7 +285,7 @@ Returns the list of block combinations index
 
 
                     //after producing 2 sets of combos, combined them in a permutative manner
-                   #pragma omp parallel for num_threads(numThreads) schedule(static)
+                   //#pragma omp parallel for num_threads(numThreads) schedule(static)
                     for(int l = 0 ; l < combos1.size() ; l++){
                         vector<int> combA = combos1[l];
 
@@ -570,16 +570,20 @@ for(int k = offset; k < offset + chunklength; k++ ){
 
 //call finalneighbors function (getNeighbors) for the column. Returns a list of neighborhoods in that column
 vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
+    
+    neighboursSize = output.size();
 
- for(int l = 0; l < output.size(); l++){
+ for(int l = 0; l < neighboursSize; l++){
 
         vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
 
         //once the block combinations have been received, generate the blocks from them
         blockList= genBlocks(blockCombos, output[l]);
 
+     
+     
          //push the blocks to collision table
-         pushToCollisionTable(blockList, sizeof(blockList)/sizeof(blockList[0]) );
+         //pushToCollisionTable(blockList, blockCombos.size() );
         
 }
 
@@ -611,10 +615,11 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
                      //once the list of block combinations are received, push to collision table                     
                      //pushToCollisionTable(blockList, blockCombosSize);
-
-                     for (int x = 0; x < blockCombosSize; x++) {
-                         for (int y = 0 ; y < 4; y++) {
-                             cout << blockList[x].rowIds[y] << " ";
+                     
+                     for (int xx = 0; xx < blockCombosSize; xx++) {
+                        
+                         for (int yy = 0 ; yy< 4; yy++) {
+                             cout << blockList[xx].rowIds[yy] << " ";
                          }
                          cout << endl;
                      }
@@ -625,6 +630,8 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                  
                  
              }
+             
+            
 
          }
 
@@ -721,11 +728,14 @@ if(myid >master){
     MPI_Recv(&offset, 1, MPI_INT, master, tag1, MPI_COMM_WORLD, &status);
     MPI_Recv(&(mat[offset][0]), chunklength*rows, MPI_DOUBLE, master, tag2, MPI_COMM_WORLD, &status);
 
-    //create neighbourhoods, then send neighbourhoods to generate blocks
-    vector <ELEMENT> justAColumn(rows);
+
 
     //for each column in that chunk
     for(int k = offset; k < offset+chunklength; k++ ) {
+        
+        //create neighbourhoods, then send neighbourhoods to generate blocks
+        vector <ELEMENT> justAColumn(rows);
+        
         for (int x = 0; x < rows; x++) {
 
             ELEMENT el;
@@ -782,9 +792,16 @@ if(myid >master){
 
             //Now generate blocks from the block combinations
             blockList = genBlocks(blockCombos, output[l]);
+            
+            /*for (int x = 0 ; x < blockCombosSize; x++) {
+                for (int y =0; y < 4; y++) {
+                    cout<< blockList[x].rowIds[y] << " ";
+                }
+                cout <<endl;
+            }*/
 
             //Now we can send the block list back to the master process
-            MPI_Send(&blockList[0], sizeof(blockList)/sizeof(blockList[0]), block_type, master, tag2, MPI_COMM_WORLD);
+            MPI_Send(&blockList[0], blockCombosSize, block_type, master, tag2, MPI_COMM_WORLD);
 
 
 
@@ -821,8 +838,8 @@ if(myid >master){
 
    int collisionSum = 0;
    int blocksGen = 0;
-     for ( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
-      { 
+     for( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
+      {
 
         //for each key add their value size
         blocksGen += (*it).second.size();
@@ -838,6 +855,8 @@ if(myid >master){
     cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
     free(keys);
     free(mat);
+    //free(listOfNeighborhoods);
+    //free(blockList);
 
     MPI_Finalize();
 }
