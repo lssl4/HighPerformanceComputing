@@ -140,41 +140,25 @@ After the 4 element combinations called blocks have been generated and modified,
 Assign and declare each combinations to a Block type and push to the global variable hashmap, collisionTable 
 c is the list of block combinations. vect is the vector of neighborhood
 */
-void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
-    int numOfElements =4;
-    int cSize = c.size();
-    
+void pushToCollisionTable(BLOCK *givenBlockList, int blockListSize){
+    //int numOfElements =4;
+
+
     omp_lock_t writelock;
     omp_init_lock(&writelock);
 
-    
-// for each combinations generated in c, obtain the combination indices' elements from vect, the neighborhood, and generate blocks from them
-// to be inserted to the collision table
+
 #pragma omp parallel for num_threads(numThreads)
-    for(int k = 0; k < cSize; k++) {
+    for(int k = 0; k < blockListSize; k++) {
 
-        //for each element index in a combo generated, access vect to get the appropriate element in the neighborhood 
-        //and put the row in the element list. and to get the keySum from keys array from the row index
-        long long int keysSum = 0;
-        BLOCK newBlock;
+       
+        BLOCK b = givenBlockList[k];
 
-        for (int j = 0; j < numOfElements; j++) {
-
-            ELEMENT el = vect[c[k][j]];
-
-            newBlock.rowIds[j] = el.row;
-            newBlock.col = el.col;
-            keysSum += keys[el.row];
-
-
-        }
-
-        newBlock.sum = keySum;
+ 
 
         //add to collision table, if it doesn't exist, it makes a new entry
-
         omp_set_lock(&writelock);//prevents other threads writing to the same location
-        collisionTable[keysSum].push_back(newBlock);
+        collisionTable[b.sum].push_back(b);
 
         omp_unset_lock(&writelock);
     
@@ -191,7 +175,7 @@ c is the list of block combinations. neigh is the vector of neighborhood
 BLOCK* genBlocks(vector<vector<int>> c, vector<ELEMENT> neigh){
     int numOfElements =4;
     int cSize = c.size();
-    BLOCK* listOfBlocks[cSize]; 
+    BLOCK* listOfBlocks = (BLOCK*) malloc(cSize*sizeof(BLOCK));
 
 
     //for each block combination
@@ -212,7 +196,7 @@ BLOCK* genBlocks(vector<vector<int>> c, vector<ELEMENT> neigh){
             
         }
 
-        newBlock.sum = keySum;
+        newBlock.sum = keysSum;
 
         //inserting it into an array
         listOfBlocks[k] = newBlock;
@@ -387,6 +371,7 @@ int main(int argc, char* argv[]){
     int neighboursSize;
     int blockCombosSize;
     ELEMENT** listOfNeighborhoods;
+    BLOCK* blockList;
 
    
     MPI_Status status;
@@ -399,36 +384,40 @@ int main(int argc, char* argv[]){
      MPI_Comm_rank(MPI_COMM_WORLD,&myid);
 
      //Defining structs for MPI
-    ELEMENT elementExample; 
+    BLOCK blockExample;
 
-    int countElement = 2;
+    int countBlock = 3;
     //says the type of every block
-    MPI_Datatype arrayOfTypes[countElement];
+    MPI_Datatype arrayOfTypes[countBlock];
     arrayOfTypes[0] = MPI_INT;
-    arrayOfTypes[1] = MPI_LONG_DOUBLE;
+    arrayOfTypes[1] = MPI_INT;
+    arrayOfTypes[2] = MPI_LONG_LONG_INT;
 
         //how many field variables in that struct
-        int arrayOfBlocklengths[countElement];
-        arrayOfBlocklengths[0] ={2};
+        int arrayOfBlocklengths[countBlock];
+        arrayOfBlocklengths[0] ={4};
         arrayOfBlocklengths[1] ={1};
+        arrayOfBlocklengths[2] ={1};
 
             //Says where every block starts in memory, counting from the beginning of the struct.
-        MPI_Aint array_of_displacements[countElement];
+        MPI_Aint array_of_displacements[countBlock];
+    
         MPI_Aint address1, address2, address3, address4;
-        MPI_Get_address(&elementExample,&address1);
-        MPI_Get_address(&elementExample.row,&address2);
-        
-        MPI_Get_address(&elementExample.datum,&address2);
+        MPI_Get_address(&blockExample,&address1);
+        MPI_Get_address(&blockExample.rowIds,&address2);
+        MPI_Get_address(&blockExample.col,&address3);
+        MPI_Get_address(&blockExample.sum,&address4);
 
 
         array_of_displacements[0] = address2 - address1;
         array_of_displacements[1] = address3 - address1;
+        array_of_displacements[2] = address4 - address1;
 
 
         //Create MPI Datatype and commit
-    MPI_Datatype element_type;
-    MPI_Type_create_struct(countElement, arrayOfBlocklengths, array_of_displacements, arrayOfTypes, &element_type);
-    MPI_Type_commit(&element_type);
+    MPI_Datatype block_type;
+    MPI_Type_create_struct(countBlock, arrayOfBlocklengths, array_of_displacements, arrayOfTypes, &block_type);
+    MPI_Type_commit(&block_type);
 
 /*
     //for element structs setup
@@ -607,10 +596,12 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
         vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
 
-        //once the block combinations have been received, push to collision table with blockCombos and the neighborhood in question
-         pushToCollisionTable(blockCombos, output[l], blockCombos.size());
+        //once the block combinations have been received, generate the blocks from them
+        blockList= genBlocks(blockCombos, output[l]);
 
-
+         //push the blocks to collision table
+         pushToCollisionTable(blockList, sizeof(blockList)/sizeof(blockList[0]) );
+        
 }
 
 
@@ -629,35 +620,25 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                  MPI_Recv(&neighboursSize,1, MPI_INT,source,tag1,MPI_COMM_WORLD,&status);
 
 
-                 //for each neighborhood in that column, if neighboursSize is 0, it doesn't go into this for loop and gets the next column
+                 //for each neighborhood in that column, get the genrated blocks if neighboursSize is 0, it doesn't go into this for loop and gets the next column
                  for(int z=0; z < neighboursSize; z++ ){
                     
-
-                    //gets the number of the block combinations generated from the neighborhood
-                     MPI_Recv(&blockCombosSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD, &status);
-                    
-                    //cout<< "Neighbors size: " << neighboursSize <<" blockCombosSize: " << blockCombosSize << endl;
-
-
-                     int** listOfBlockCombos = alloc_2d_int(blockCombosSize, 4);
-
-
-                     MPI_Recv(&(listOfBlockCombos[0][0]), blockCombosSize * 4, MPI_INT, source, tag2, MPI_COMM_WORLD,
+                     //obtains the size of the list of Block combinations
+                     MPI_Recv(&blockCombosSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD,
                               &status);
+                     
+                     //Receiving the list of blocks generated
+                     MPI_Recv(&blockList, blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
 
                      //once the list of block combinations are received, push to collision table                     
                     // pushToCollisionTable(listOfBlockCombos, listOfNeighborhoods,blockCombos);
 
-                     for (int k = 0; k < blockCombosSize; k++) {
-                         for (int l = 0; l < 4; l++) {
-                             cout << listOfBlockCombos[k][l] << " ";
-                         }
-                         cout << endl;
-                     }
 
 
 
                  }
+                 
+                 
              }
 
          }
@@ -789,7 +770,6 @@ if(myid >master){
         //sends info to master process about the amount of neighbourhoods
         MPI_Send(&neighboursSize, 1,MPI_INT,master,tag1,MPI_COMM_WORLD);
 
-        if(neighboursSize >0){
         
 
 
@@ -806,22 +786,26 @@ if(myid >master){
                 }
             }*/
 
-            //how many block combinations in that neighborhood
+            //the amount of block combinations in that neighborhood
             blockCombosSize = blockCombos.size();
 
 
             MPI_Send(&blockCombosSize, 1, MPI_INT, master,tag1, MPI_COMM_WORLD);
 
-            int **blockCombos2dArray = vectorTo2DArray(blockCombos);
+            //int **blockCombos2dArray = vectorTo2DArray(blockCombos);
+           // MPI_Send(&(blockCombos2dArray[0][0]),blockCombosSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
 
+            //Now generate blocks from the block combinations
+            blockList = genBlocks(blockCombos, output[l]);
 
-            MPI_Send(&(blockCombos2dArray[0][0]),blockCombosSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
+            //Now we can send the list back to the master process
+            MPI_Send(&blockList, sizeof(blockList)/sizeof(blockList[0]), block_type, master, tag2, MPI_COMM_WORLD);
 
 
 
         }
 
-        }
+        
     }
 
 
