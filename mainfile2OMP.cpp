@@ -70,6 +70,8 @@ ELEMENT **alloc_2d_element(int rows2d, int cols2d){
     return array;
 }
 
+
+
 int** vectorTo2DArray(vector<vector<int>> v){
 
 
@@ -138,8 +140,10 @@ After the 4 element combinations called blocks have been generated and modified,
 Assign and declare each combinations to a Block type and push to the global variable hashmap, collisionTable 
 c is the list of block combinations. vect is the vector of neighborhood
 */
-void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect, int cSize){
+void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect){
     int numOfElements =4;
+    int cSize = c.size();
+    
     omp_lock_t writelock;
     omp_init_lock(&writelock);
 
@@ -158,12 +162,14 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect, int cSize
 
             ELEMENT el = vect[c[k][j]];
 
-            newBlock.rowIds.push_back(el.row);
+            newBlock.rowIds[j] = el.row;
             newBlock.col = el.col;
             keysSum += keys[el.row];
 
 
         }
+
+        newBlock.sum = keySum;
 
         //add to collision table, if it doesn't exist, it makes a new entry
 
@@ -176,6 +182,49 @@ void pushToCollisionTable(vector<vector<int>> c, vector<ELEMENT> vect, int cSize
 
     omp_destroy_lock(&writelock);
 }
+
+
+/*
+Generates a list of blocks from the given combination and neighborhood. Returns the list of BLOCKS to be inserted into the hashmap.
+c is the list of block combinations. neigh is the vector of neighborhood
+*/
+BLOCK* genBlocks(vector<vector<int>> c, vector<ELEMENT> neigh){
+    int numOfElements =4;
+    int cSize = c.size();
+    BLOCK* listOfBlocks[cSize]; 
+
+
+    //for each block combination
+    for(int k = 0; k < cSize; k++) {
+
+        //for each element index in a combo generated, access neigh to get the appropriate element in the neighborhood 
+        //and put the row in the block rowIds list. 
+        BLOCK newBlock;
+        long long int keysSum = 0;
+
+        for (int j = 0; j < numOfElements; j++) {
+
+            ELEMENT el = neigh[c[k][j]];
+
+            newBlock.rowIds[j] = el.row;
+            newBlock.col = el.col;
+             keysSum += keys[el.row];
+            
+        }
+
+        newBlock.sum = keySum;
+
+        //inserting it into an array
+        listOfBlocks[k] = newBlock;
+    
+    } 
+
+
+    return listOfBlocks;
+
+}
+
+
 
 
 
@@ -583,10 +632,6 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                  //for each neighborhood in that column, if neighboursSize is 0, it doesn't go into this for loop and gets the next column
                  for(int z=0; z < neighboursSize; z++ ){
                     
-                    listOfNeighborhoods = alloc_2d_element()
-
-                    //Receives the listOfNeighborhoods. ****don't know how many elements there are in a neighborhood therefore need to genBlocks and send it through
-                    //MPI_Recv(&listOfNeighborhoods neighboursSize*);
 
                     //gets the number of the block combinations generated from the neighborhood
                      MPI_Recv(&blockCombosSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD, &status);
@@ -601,7 +646,7 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                               &status);
 
                      //once the list of block combinations are received, push to collision table                     
-                     pushToCollisionTable(listOfBlockCombos, listOfNeighborhoods,blockCombos);
+                    // pushToCollisionTable(listOfBlockCombos, listOfNeighborhoods,blockCombos);
 
                      for (int k = 0; k < blockCombosSize; k++) {
                          for (int l = 0; l < 4; l++) {
@@ -745,28 +790,11 @@ if(myid >master){
         MPI_Send(&neighboursSize, 1,MPI_INT,master,tag1,MPI_COMM_WORLD);
 
         if(neighboursSize >0){
-        //need to send the list of neighborhoods for a column to master. but first convert vector<vector> into a 2d array
-        int outputRows = output.size();
-        int outputCols = output[0].size();
+        
 
-        listOfNeighborhoods = alloc_2d_element( outputRows,outputCols );
-
-        //populate contiguous 2d array
-        for(int x = 0 ; x < outputRows; x++){
-
-            for(int y = 0 ; y <outputCols ; y++){
-
-                listOfNeighborhoods[x][y] = output[x][y];
-
-            }
-
-        }
-
-        //Now send the listOfNeighborhoods
-        MPI_Send(&(listOfNeighborhoods[0][0]), outputRows*outputCols, element_type, master, tag2, MPI_COMM_WORLD);
 
         //for each neighborhood in that column
-        for(int l = 0; l < output.size(); l ++){
+        for(int l = 0; l < neighboursSize; l ++){
             
             
             
@@ -816,32 +844,6 @@ if(myid >master){
 }//End of non master processes work
 
 
-  /*while(myid > master && stopComplete !=0) {
-
-      if (myid == sendProcessId) {
-
-          cout << "this is process id: " << myid << endl;
-          int source = master;
-          vector <vector<ELEMENT>> listOfChunks;
-          vector <ELEMENT> chunkOfNeighborhood;
-          int sizeOfNeighborhood;
-
-
-
-              MPI_Recv(&sizeOfNeighborhood, 1, MPI_INT, source, 1, MPI_COMM_WORLD, &status);
-              // MPI_Recv(&chunkOfNeighborhood, sizeOfNeighborhood, element_type, source, 2,    MPI_COMM_WORLD, &status);
-
-              for(int x =0; x < chunkOfNeighborhood.size(); x++){
-                   cout<< chunkOfNeighborhood[x].datum <<endl;
-              }
-              printf("Process 1 received number %d from process 0\n",
-                     sizeOfNeighborhood);
-              cout << "Size of: " << sizeOfNeighborhood << endl;
-
-
-      }
-
-  }*/
 
 
 

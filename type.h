@@ -18,8 +18,9 @@ typedef struct ELEMENTS
 typedef struct BLOCKS
 {
 	
-  vector<int> rowIds;
+  int rowIds[4];
   int col;
+  long long int sum;
 	
 
 }BLOCK;
