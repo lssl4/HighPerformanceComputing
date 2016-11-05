@@ -631,8 +631,9 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                      MPI_Recv(&blockList, blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
 
                      //once the list of block combinations are received, push to collision table                     
-                    // pushToCollisionTable(listOfBlockCombos, listOfNeighborhoods,blockCombos);
+                     //pushToCollisionTable(blockList, blockCombosSize);
 
+                     
 
 
 
