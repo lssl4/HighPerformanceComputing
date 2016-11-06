@@ -306,7 +306,7 @@ bool lowHighProcesses (PROCESS i, PROCESS j) {
 
 int main(int argc, char* argv[]){
 
-    int numprocs, myid, master = 0, blocksToBeGenerated =0; 
+    int numprocs, myid, master = 0, blocksToBeGenerated =0;
 
     //more declarations
     //MPI_Status status;
@@ -323,13 +323,16 @@ int main(int argc, char* argv[]){
     int offset;
 
 
+    //variables used for time calculations
+    double start_time,end_time;
+
     //Processing work variables
     int neighboursSize;
     int blockCombosSize;
     //ELEMENT** listOfNeighborhoods;
     //BLOCK* blockList;
 
-   
+
     MPI_Status status;
 
 
@@ -357,7 +360,7 @@ int main(int argc, char* argv[]){
 
             //Says where every block starts in memory, counting from the beginning of the struct.
         MPI_Aint array_of_displacements[countBlock];
-    
+
         MPI_Aint address1, address2, address3, address4;
         MPI_Get_address(&blockExample,&address1);
         MPI_Get_address(&blockExample.rowIds,&address2);
@@ -377,7 +380,7 @@ int main(int argc, char* argv[]){
 
 
 
-  
+
 if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5][0]) ){
 
         printf("Please give the correct arguments: progName datafilename keysfilename rows columns dia\n");
@@ -405,14 +408,14 @@ if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5]
         printf("File opening failed\n");
         return -1;
     }
-    
+
 
 //Getting every lli from the file
     for(int x = 0 ; x < rows; x++){
 
 
         fscanf(fp, "%lli", &keys[x]);
-        
+
     }
 fclose(fp);
 
@@ -422,8 +425,10 @@ fclose(fp);
     MPI_Abort(MPI_COMM_WORLD, rc);
     exit(0);
    }
-
-   chunklength = cols/numprocs;
+    //initialize start time
+    start_time = MPI_Wtime();
+    //calculates the amount of separated chunks evenly across the amount of processors we have
+    chunklength = cols/numprocs;
 
    tag1 = 1;
    tag2 = 2;
@@ -458,7 +463,7 @@ fclose(fp);
         i =0;
         record = strtok(line,",");
 
-        
+
         while(record != NULL)
         {
 
@@ -487,7 +492,7 @@ fclose(fp);
     }
 }*/
 
-   
+
 //distributing work
 offset = chunklength;
 for(dest= 1 ; dest < numprocs; dest++){
@@ -498,7 +503,7 @@ for(dest= 1 ; dest < numprocs; dest++){
                     dest, tag2, MPI_COMM_WORLD);
 
     offset += chunklength;
-    
+
 }
 
 //Master process its own work
@@ -508,7 +513,7 @@ for(int k = offset; k < offset + chunklength; k++ ){
 
 
     vector<ELEMENT> justAColumn(rows);
-    
+
     for(int x = 0 ; x < rows; x++){
 
         ELEMENT el;
@@ -519,34 +524,34 @@ for(int k = offset; k < offset + chunklength; k++ ){
 
         justAColumn[x] = el;
 
-        
+
 
     }
 
 
 //call finalneighbors function (getNeighbors) for the column. Returns a list of neighborhoods in that column
 vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
-    
+
     neighboursSize = output.size();
 
  for(int l = 0; l < neighboursSize; l++){
 
         vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
-     
+
         //creating a BLOCK* array
      BLOCK* blockList = (BLOCK*) malloc(blockCombos.size()*sizeof(BLOCK));
 
         //once the block combinations have been received, generate the blocks from them
         blockList= genBlocks(blockCombos, output[l]);
 
-     
-     
+
+
          //push the blocks to collision table
          pushToCollisionTable(blockList, blockCombos.size() );
-     
+
      //freeing blockList
      free(blockList);
-        
+
 }
 
 
@@ -555,10 +560,10 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 //receiving results from other processes
          for(int x=1; x<numprocs;x++) {
-                               
+
 
              source = x;
-             //for each column that a process is responsible for 
+             //for each column that a process is responsible for
              for(int y=0; y<chunklength;y++){
 
                 //gets how many neighborhoods there are for that column
@@ -567,21 +572,21 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
                  //for each neighborhood in that column, get the genrated blocks if neighboursSize is 0, it doesn't go into this for loop and gets the next column
                  for(int z=0; z < neighboursSize; z++ ){
-                    
+
                      //obtains the size of the list of Block combinations
                      MPI_Recv(&blockCombosSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD,
                               &status);
-                     
+
                      BLOCK* blockListRecv = (BLOCK*) malloc(blockCombosSize*sizeof(BLOCK));
-                     
+
                      //Receiving the list of blocks generated
                      MPI_Recv(&blockListRecv[0], blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
 
-                     //once the list of block combinations are received, push to collision table                     
+                     //once the list of block combinations are received, push to collision table
                      pushToCollisionTable(blockListRecv, blockCombosSize);
-                     
+
                      /*for (int xx = 0; xx < blockCombosSize; xx++) {
-                        
+
                          for (int yy = 0 ; yy< 4; yy++) {
                              cout << blockListRecv[xx].rowIds[yy] << " ";
                          }
@@ -592,18 +597,19 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                      free(blockListRecv);
 
                  }
-                 
-                 
+
+
              }
-             
-            
+
+
 
          }
 
 
 
 }//end of master section
-
+    //intialize end timeafter all processing has been done form all proceses
+    end_time=MPI_Wtime();
 
 //Non master section only
 if(myid >master){
@@ -615,10 +621,10 @@ if(myid >master){
 
     //for each column in that chunk
     for(int k = offset; k < offset+chunklength; k++ ) {
-        
+
         //create neighbourhoods, then send neighbourhoods to generate blocks
         vector <ELEMENT> justAColumn(rows);
-        
+
         for (int x = 0; x < rows; x++) {
 
             ELEMENT el;
@@ -648,14 +654,14 @@ if(myid >master){
         //sends info to master process about the amount of neighbourhoods
         MPI_Send(&neighboursSize, 1,MPI_INT,master,tag1,MPI_COMM_WORLD);
 
-        
+
 
 
         //for each neighborhood in that column
         for(int l = 0; l < neighboursSize; l ++){
-            
-            
-            
+
+
+
             vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
 
             /*for(int m =0 ; m < blockCombo.size(); m++){
@@ -670,13 +676,13 @@ if(myid >master){
 
             MPI_Send(&blockCombosSize, 1, MPI_INT, master,tag1, MPI_COMM_WORLD);
 
-          
-            
+
+
             BLOCK* blockListSend = (BLOCK*) malloc(blockCombosSize*sizeof(BLOCK));
-            
+
             //Now generate blocks from the block combinations
             blockListSend = genBlocks(blockCombos, output[l]);
-            
+
             /*for (int x = 0 ; x < blockCombosSize; x++) {
                 for (int y =0; y < 4; y++) {
                     cout<< blockList[x].rowIds[y] << " ";
@@ -686,7 +692,7 @@ if(myid >master){
 
             //Now we can send the block list back to the master process
             MPI_Send(&blockListSend[0], blockCombosSize, block_type, master, tag2, MPI_COMM_WORLD);
-            
+
             //freeing blockListSend
             free(blockListSend);
 
@@ -694,7 +700,7 @@ if(myid >master){
 
         }
 
-        
+
     }
 
 
@@ -722,8 +728,9 @@ if(myid >master){
 
 
         cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
+        cout<< "wallclock time elapsed: "<< end_time-start_time <<" seconds."<<endl;
     }
-    
+
     free(keys);
     free(mat);
     //free(listOfNeighborhoods);
