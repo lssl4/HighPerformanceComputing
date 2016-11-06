@@ -421,6 +421,8 @@ fclose(fp);
 
    //error checking
     //if cols % numprocs !=0, find the next smallest numprocs that is divisible by number of columns
+    
+    int originalNumprocs = numprocs;
     if(cols%numprocs != 0){
     
         while(cols%numprocs != 0 && numprocs >0){
@@ -436,7 +438,7 @@ fclose(fp);
         }
         
         if(myid == master){
-            printf("Since the number of processes generated is not divisible by the number of columns, only %i processes are used\n", numprocs);}
+            printf("Since the number of original processes generated is %i and it's not divisible by the number of columns, only %i processes are used\n", originalNumprocs ,numprocs);}
         
     }else{
     
