@@ -57,18 +57,6 @@ int **alloc_2d_int(int rows2d, int cols2d){
     return array;
 }
 
-ELEMENT **alloc_2d_element(int rows2d, int cols2d){
-
-   
-
-    ELEMENT *data = (ELEMENT *)malloc(rows2d*cols2d*sizeof(ELEMENT));
-    ELEMENT **array= (ELEMENT **)malloc(rows2d*sizeof(ELEMENT*));
-    for (int i=0; i<rows2d; i++)
-        {array[i] = &(data[cols2d*i]);}
-
-
-    return array;
-}
 
 
 
@@ -370,8 +358,8 @@ int main(int argc, char* argv[]){
     //Processing work variables
     int neighboursSize;
     int blockCombosSize;
-    ELEMENT** listOfNeighborhoods;
-    BLOCK* blockList;
+    //ELEMENT** listOfNeighborhoods;
+    //BLOCK* blockList;
 
    
     MPI_Status status;
@@ -576,6 +564,9 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
  for(int l = 0; l < neighboursSize; l++){
 
         vector<vector<int>> blockCombos = genBlockCombinations(output[l], (output[l][output[l].size()-1]).datum );
+     
+        //creating a BLOCK* array
+     BLOCK* blockList = (BLOCK*) malloc(blockCombos.size()*sizeof(BLOCK));
 
         //once the block combinations have been received, generate the blocks from them
         blockList= genBlocks(blockCombos, output[l]);
@@ -583,7 +574,10 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
      
      
          //push the blocks to collision table
-         //pushToCollisionTable(blockList, blockCombos.size() );
+         pushToCollisionTable(blockList, blockCombos.size() );
+     
+     //freeing blockList
+     free(blockList);
         
 }
 
@@ -610,21 +604,24 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                      MPI_Recv(&blockCombosSize, 1, MPI_INT, source, tag1, MPI_COMM_WORLD,
                               &status);
                      
+                     BLOCK* blockListRecv = (BLOCK*) malloc(blockCombosSize*sizeof(BLOCK));
+                     
                      //Receiving the list of blocks generated
-                     MPI_Recv(&blockList[0], blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
+                     MPI_Recv(&blockListRecv[0], blockCombosSize, block_type, source, tag2, MPI_COMM_WORLD, &status);
 
                      //once the list of block combinations are received, push to collision table                     
-                     //pushToCollisionTable(blockList, blockCombosSize);
+                     pushToCollisionTable(blockListRecv, blockCombosSize);
                      
                      for (int xx = 0; xx < blockCombosSize; xx++) {
                         
                          for (int yy = 0 ; yy< 4; yy++) {
-                             cout << blockList[xx].rowIds[yy] << " ";
+                             cout << blockListRecv[xx].rowIds[yy] << " ";
                          }
                          cout << endl;
                      }
 
-
+                    //freeing blockListRecv
+                     free(blockListRecv);
 
                  }
                  
@@ -755,9 +752,11 @@ if(myid >master){
 
             //int **blockCombos2dArray = vectorTo2DArray(blockCombos);
            // MPI_Send(&(blockCombos2dArray[0][0]),blockCombosSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
-
+            
+            BLOCK* blockListSend = (BLOCK*) malloc(blockCombosSize*sizeof(BLOCK));
+            
             //Now generate blocks from the block combinations
-            blockList = genBlocks(blockCombos, output[l]);
+            blockListSend = genBlocks(blockCombos, output[l]);
             
             /*for (int x = 0 ; x < blockCombosSize; x++) {
                 for (int y =0; y < 4; y++) {
@@ -767,7 +766,10 @@ if(myid >master){
             }*/
 
             //Now we can send the block list back to the master process
-            MPI_Send(&blockList[0], blockCombosSize, block_type, master, tag2, MPI_COMM_WORLD);
+            MPI_Send(&blockListSend[0], blockCombosSize, block_type, master, tag2, MPI_COMM_WORLD);
+            
+            //freeing blockListSend
+            free(blockListSend);
 
 
 
