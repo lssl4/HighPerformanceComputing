@@ -59,38 +59,6 @@ int **alloc_2d_int(int rows2d, int cols2d){
 
 
 
-
-int** vectorTo2DArray(vector<vector<int>> v){
-
-
-    int n = v.size();
-    int m = v[0].size();
-
-     
-
-    int** contInt2dArray = alloc_2d_int(n,m);
-
-    
-    //populate contiguous 2d array
-    for(int x = 0 ; x < n; x++){
-
-        for(int y = 0 ; y < m ; y++){
-
-                contInt2dArray[x][y] = v[x][y];
-
-        }
-
-    }
-
-   // cout << "n: " << n << " m: " << m<< "hello"<<endl;
-   
-    return contInt2dArray;
-
-}
-
-
-
-
 /*
 Generate all the combinations of indices given an integer n and choosing r.
 */
@@ -634,12 +602,6 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
 
-   
-        
-
-
-
-
 }//end of master section
 
 
@@ -736,35 +698,32 @@ if(myid >master){
     }
 
 
-
-
-
-
-
-
 }//End of non master processes work
 
 
 
-//printing out collision table summary
+//printing out collision table summary. only from master process
 
-   int collisionSum = 0;
-   int blocksGen = 0;
-     for( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
-      {
+    if(myid == master){
+        int collisionSum = 0;
+        int blocksGen = 0;
+        for( auto it = collisionTable.begin(); it != collisionTable.end(); ++it )
+        {
 
-        //for each key add their value size
-        blocksGen += (*it).second.size();
+            //for each key add their value size
+            blocksGen += (*it).second.size();
 
-        if((*it).second.size() > 1){
+            if((*it).second.size() > 1){
             collisionSum++;
+            }
+
+
         }
 
 
+        cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
     }
-
-
-    cout<< "collisionSum: "<< collisionSum << " BlocksGen: " << blocksGen<<endl ;
+    
     free(keys);
     free(mat);
     //free(listOfNeighborhoods);
