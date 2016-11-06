@@ -417,11 +417,44 @@ if(argc < 6 || !isdigit(argv[3][0]) || !isdigit(argv[4][0]) ||  !isdigit(argv[5]
 fclose(fp);
 
    //error checking
-   if(cols%numprocs !=0){
-    printf("Quitting. Number of MPI tasks must be divisible by numprocs.\n");
+    //if cols % numprocs !=0, find the next smallest numprocs that is divisible by number of columns
+    if(cols%numprocs != 0){
+    
+        while(cols%numprocs != 0 && numprocs >0){
+        
+            numprocs--;
+        }
+        
+        //if it turns out that numprocs is less than 1, then abort the program
+        if(numprocs<= 0 ){
+            printf("Quitting. Number of data columns must be divisible by number of proceses.\n");
+            MPI_Abort(MPI_COMM_WORLD, rc);
+            exit(0);
+        }
+        
+        if(myid == master){
+            printf("Since the number of processes generated is not divisible by the number of columns, only %i processes are used\n", numprocs);}
+        
+    }else{
+    
+        if(myid == master){
+            printf("%i processes are used\n", numprocs);
+        }
+    
+    }
+    
+    
+   /*if(cols%numprocs !=0 ){
+    printf("Quitting. Number of data columns must be divisible by number of proceses.\n");
     MPI_Abort(MPI_COMM_WORLD, rc);
     exit(0);
-   }
+   }else if(cols < numprocs){
+       
+       printf("Quitting. Number of data columns must be greater than the number of proceses.\n");
+       MPI_Abort(MPI_COMM_WORLD, rc);
+       exit(0);
+       
+   }*/
 
    chunklength = cols/numprocs;
 
@@ -606,7 +639,7 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
 //Non master section only
-if(myid >master){
+if(myid >master && myid < numprocs){
 
     MPI_Recv(&offset, 1, MPI_INT, master, tag1, MPI_COMM_WORLD, &status);
     MPI_Recv(&(mat[offset][0]), chunklength*rows, MPI_DOUBLE, master, tag2, MPI_COMM_WORLD, &status);
