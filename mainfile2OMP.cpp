@@ -612,13 +612,13 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
                      //once the list of block combinations are received, push to collision table                     
                      pushToCollisionTable(blockListRecv, blockCombosSize);
                      
-                     for (int xx = 0; xx < blockCombosSize; xx++) {
+                     /*for (int xx = 0; xx < blockCombosSize; xx++) {
                         
                          for (int yy = 0 ; yy< 4; yy++) {
                              cout << blockListRecv[xx].rowIds[yy] << " ";
                          }
                          cout << endl;
-                     }
+                     }*/
 
                     //freeing blockListRecv
                      free(blockListRecv);
