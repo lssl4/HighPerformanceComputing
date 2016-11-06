@@ -634,49 +634,7 @@ vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
 
 
 
-    //sorting and generating the column by column
-//#pragma omp num_threads(numThreads) for schedule(static)
-
    
-  /*  for(int k = 0; k < cols; k++ ){
-
-
-    vector<ELEMENT> justAColumn(rows);
-    
-    for(int x = 0 ; x < rows; x++){
-
-        ELEMENT el;
-        el.row = x;
-        el.col = 0;
-        el.datum =  mat[k][x];
-
-
-        justAColumn[x] = el;
-
-        
-
-    }
-
-
-
-    //call finalneighbors function (getNeighbors) where the column will be sorted in the function. Returns a list of neighborhoods
-    vector<vector<ELEMENT>> output = getNeighbours(justAColumn, dia);
-
-
-   
-
-
-
-    for(int k = 0; k < output.size(); k ++){
-
-        genBlocks(output[k], (output[k][output[k].size()-1]).datum );
-    }
-
-
-
-
-    }*/
-
         
 
 
@@ -750,8 +708,7 @@ if(myid >master){
 
             MPI_Send(&blockCombosSize, 1, MPI_INT, master,tag1, MPI_COMM_WORLD);
 
-            //int **blockCombos2dArray = vectorTo2DArray(blockCombos);
-           // MPI_Send(&(blockCombos2dArray[0][0]),blockCombosSize*4, MPI_INT, master, tag2, MPI_COMM_WORLD);
+          
             
             BLOCK* blockListSend = (BLOCK*) malloc(blockCombosSize*sizeof(BLOCK));
             
