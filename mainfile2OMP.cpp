@@ -252,7 +252,13 @@ BLOCK* genBlocks(vector<vector<int>> c, vector<ELEMENT> neigh){
 
 
 
-
+/*
+ * The main function first declares the MPI datatype of the user defined struct called BLOCK. which holds the row ids that make up a BLOCK,
+ * the column in which is located, and the key sum from the row indices. It also processes the keys.txt for all the processes and the data.txt in the master process
+ * It also dynamically changes the number of processes used if the number of processes generated is not divisible for the number of data columns. 
+ * This program follows the master and slave program structure in which the master process distributes work to the other processes and returns the BLOCK array, which is a list of blocks generated from the processes
+ * The master process would then receive all blocks generated from the other processes to be inserted into the collision hashmap table. 
+*/
 int main(int argc, char* argv[]){
 
     int numprocs, myid, master = 0, blocksToBeGenerated =0;
@@ -363,6 +369,7 @@ fclose(fp);
     int originalNumprocs = numprocs;
     if(cols%numprocs != 0){
     
+        //numprocs keeps decreasing until it finds a number divisible with the given columns. Stops until numprocs is less than 1
         while(cols%numprocs != 0 && numprocs >0){
         
             numprocs--;
@@ -376,7 +383,8 @@ fclose(fp);
         }
         
         if(myid == master){
-            printf("Since the number of original processes generated is %i and it's not divisible by the number of columns, only %i processes are used\n", originalNumprocs ,numprocs);}
+            printf("Since the number of original processes generated is %i and it's not divisible by the number of columns, only %i processes are used\n", originalNumprocs ,numprocs);
+        }
         
     }else{
     
@@ -499,7 +507,7 @@ fclose(fp);
             }
         }
     }//end of master section
-    
+
     //intialize end timeafter all processing has been done form all proceses
     end_time=MPI_Wtime();
 
@@ -578,4 +586,6 @@ fclose(fp);
     free(keys);
     free(mat);
     MPI_Finalize();
+
+    return 0;
 }
