@@ -22,9 +22,9 @@ using namespace std;
 #include <vector>
 #include <iostream>
 #include <algorithm>
-
-#include "finalNeighbors.cpp"
 #include "type.h"
+#include "finalNeighbors.cpp"
+
 
 #define numThreads 4
 
