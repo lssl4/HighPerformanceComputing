@@ -26,7 +26,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
     sort(s.begin(), s.end(), lowHigh);
 
 
-    //for element in s, find its neighborhood. skip finding neigbourhoods when all elements have been seen
+    //for each element in s, find its neighborhood. skip finding neigbourhoods when all elements have been seen
     for (int start = 0; start < s.size() && prevLastIndex < s.size(); start++)
 
     {

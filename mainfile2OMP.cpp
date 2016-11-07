@@ -312,9 +312,6 @@ int main(int argc, char* argv[]){
     //Processing work variables
     int neighboursSize;
     int blockCombosSize;
-    //ELEMENT** listOfNeighborhoods;
-    //BLOCK* blockList;
-
 
     MPI_Status status;
 
@@ -652,7 +649,5 @@ fclose(fp);
 
     free(keys);
     free(mat);
-    //free(listOfNeighborhoods);
-    //free(blockList);
     MPI_Finalize();
 }
