@@ -1,19 +1,22 @@
 
-//Comparison function to compare the ELEMENT's values
+/*
+ * Comparison function for sorting to compare the ELEMENT's values
+ * @param i 1st ELEMENT object to compare its value
+ * @param j 2nd ELEMENT object to compare its value
+ * @returns true if j is greater than i resulting in an ascending order
+*/
 bool lowHigh (ELEMENT i, ELEMENT j) {
     return (i.datum<j.datum);
 }
 
 
 /*
-Returns the list of neighborhoods provided the whole column vector s and dia
+ * Generates all the neighborhoods of a column. 
+ * @param s the vector which consist of a column
+ * @param dia the distance to create a neighborhood with 
+ * @return the list of neighborhoods from the provided column vector s and dia distance 
 */
 vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
-
-
-
-
-
 
     vector<vector<ELEMENT>> listOfNeigh;
 
@@ -23,7 +26,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
     //last element index in s
     int lastIndex = 0;
 
-
     //sort s
     sort(s.begin(), s.end(), lowHigh);
 
@@ -32,21 +34,14 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
 
     {
         vector<ELEMENT> v1;
-
         int pivot = 1;
-
-
 
         //when start equals to prevLastIndex, move prevlastIndex by one
         if(prevLastIndex == start){
             prevLastIndex++;
         }
 
-
-
         //make v1 be consist of the subset of elements that have been seen from the previous neighborhood
-
-
         for(int k = start ; k < prevLastIndex; k++){
 
             v1.push_back(s[k]);
@@ -101,7 +96,6 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
                     //since the list is successful, update the lastindex
                     lastIndex = j-1;
 
-
                     //push back the pivot number in the neighborhood vector as an element type. pivot appears at the end of vector
                     ELEMENT pivotEl;
                     pivotEl.datum = pivot;
@@ -110,9 +104,7 @@ vector<vector<ELEMENT>> getNeighbours(vector<ELEMENT> s, double dia){
                     //after finding the longest neighborhood, push it in the list
                     listOfNeigh.push_back(v1);
 
-
                 }
-
 
                 //update prevLastIndex with jth element which indicates which elements have been seen
                 prevLastIndex = j;
